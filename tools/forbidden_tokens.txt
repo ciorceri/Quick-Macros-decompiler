@@ -1,0 +1,7 @@
+# Generic forbidden patterns for tools/check_publish.py (classes of leaks, no personal strings).
+# Format: <kind>:<hex of UTF-8 text>; kind s = case-insensitive substring, r = case-insensitive regex.
+# Personal strings (names, machine names, GUIDs of your own macros) belong in a PRIVATE file kept outside
+# the repository and passed with --private FILE or the QM_RE_PRIVATE_TOKENS environment variable.
+s:633a5c7573657273
+s:5c6465736b746f705c
+r:5b412d5a612d7a302d392e5f252b2d5d2b405b412d5a612d7a302d392d5d2b5c2e5b412d5a612d7a5d7b322c7d

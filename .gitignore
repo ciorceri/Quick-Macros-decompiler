@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -218,3 +219,31 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+=======
+# Compiled QM executables embed the proprietary QM runtime: never commit them.
+*.exe
+*.ex$
+*.bin
+*.chm
+*.dll
+
+# The corpus of exes you build yourself from samples/
+corpus/
+*.qmdec.qml.tmp
+
+# Generated output
+out/
+roundtrip/
+*_qm/
+extracted*/
+baseline.json.bak
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Local/agent state
+.claude/
+*.log
+>>>>>>> master
