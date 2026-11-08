@@ -4622,48 +4622,6 @@ def _keep_note(note: str) -> bool:
     return ANNOTATE or "TODO" in note or "guessed name" in note
 
 
-def project_footer(path: Path, exe_dir: str) -> list[str]:
-    """Builds the BEGIN PROJECT ... END PROJECT block of a QM file.
-
-    QM reads this block as the item properties (main function, exe file,
-    manifest), so a .qml with the block opens in QM ready for Make Exe. The
-    main function name and the GUID are stored in res1 of the exe; icon,
-    manifest and flags are the QM defaults (not stored in the exe).
-
-    Args:
-        path: The decompiled exe (or a directory of extracted resources).
-        exe_dir: Folder part of `exe_file`; empty = bare file name.
-
-    Returns:
-        The block lines (empty list if res1 has no GUID).
-    """
-    try:
-        if path.is_dir():
-            res1 = sorted(path.glob("*res1.bin"))[0].read_bytes()
-        else:
-            res1 = qmtool.parse_pe_resources_named(path.read_bytes())[
-                qmtool.QM_RESOURCE_TYPE
-            ][1]
-    except Exception:
-        return []
-    m = re.search(rb"(\{[0-9A-Fa-f-]{36}\})\x00([^\x00]*)\x00", res1)
-    if not m:
-        return []
-    exe = path.stem + ".exe"
-    if exe_dir:
-        exe = exe_dir.rstrip("\\") + "\\" + exe
-    return [
-        " BEGIN PROJECT",
-        " main_function  " + m.group(2).decode("latin-1"),
-        " exe_file  " + exe,
-        " icon  <default>",
-        " manifest  $qm$\\default.exe.manifest",
-        " flags  6",
-        " guid  " + m.group(1).decode("ascii"),
-        " END PROJECT",
-    ]
-
-
 def finalize_comments(lines: list[str]) -> list[str]:
     """Converts decompiler notes into valid QM comments.
 
@@ -4768,20 +4726,6 @@ def main() -> int:
             "Implied by --roundtrip"
         ),
     )
-    ap.add_argument(
-        "--exe-dir",
-        default="",
-        help=(
-            "folder of `exe_file` in the BEGIN PROJECT block (QM path "
-            "variables allowed, e.g. $desktop$); default: none, i.e. the "
-            "bare file name"
-        ),
-    )
-    ap.add_argument(
-        "--no-project",
-        action="store_true",
-        help="do not append the BEGIN PROJECT ... END PROJECT block",
-    )
     a = ap.parse_args()
     global GUESS_NAMES, ROUNDTRIP, ANNOTATE
     GUESS_NAMES = a.guess_names
@@ -4803,8 +4747,6 @@ def main() -> int:
                 + (["--roundtrip"] if ROUNDTRIP else [])
                 + (["--with-library"] if a.with_library else [])
                 + (["--annotate"] if a.annotate else [])
-                + (["--no-project"] if a.no_project else [])
-                + (["--exe-dir", a.exe_dir] if a.exe_dir else [])
             )
             main()
         return 0
@@ -4939,12 +4881,7 @@ def main() -> int:
             "// NOTE: --guess-names is ON: names marked /*guessed name*/ are "
             "cosmetic guesses from type/usage, not evidence.",
         )
-    out_lines = finalize_comments(lines)
-    if not (a.no_project or ROUNDTRIP):
-        foot = project_footer(a.target, a.exe_dir)
-        if foot:
-            out_lines += [""] + foot
-    txt = chr(10).join(out_lines) + chr(10)
+    txt = chr(10).join(finalize_comments(lines)) + chr(10)
     if a.output:
         a.output.write_text(txt, encoding="utf-8")
     else:
