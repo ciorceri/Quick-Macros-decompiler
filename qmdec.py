@@ -523,6 +523,12 @@ SYSTEM_QML = (
     if _os.environ.get("QM_SYSTEM_QML")
     else Path("__no_system_qml__")
 )
+# Functions of QM's System.qml that Make Exe embeds in exes; used to recognise
+# library copies when QM_SYSTEM_QML is not set (names seen in the corpus).
+# A user function with one of these names is wrongly omitted: --with-library.
+KNOWN_LIBRARY_FUNCTIONS = frozenset(
+    {"GetWinStyle", "ShutDownProcess", "TriggerWindow"}
+)
 # --roundtrip: every local declared WITHOUT initialiser at the function head in
 # descriptor order (QM numbers descriptors in declaration order)
 ROUNDTRIP = False
@@ -4764,12 +4770,15 @@ def main() -> int:
         (r["id"] for r, *_ in [(f[1],) for f in funcs] if r["kind"] == 1), None
     )
     # Functions that are copies of System.qml items (QM Make Exe embeds the
-    # library functions the macro calls). Only detectable with QM_SYSTEM_QML.
+    # library functions the macro calls). Detected from QM_SYSTEM_QML or the built-in name list.
     library_ids = set()
     if not (a.with_library or ROUNDTRIP):
         for nm, rec, _b, _s in funcs:
             if rec["kind"] == 2 and not nm.startswith("<"):
-                if _sysq_source(nm) is not None:
+                if (
+                    _sysq_source(nm) is not None
+                    or nm in KNOWN_LIBRARY_FUNCTIONS
+                ):
                     library_ids.add(rec["id"])
         for nm, rec, _b, _s in funcs:
             m = re.match(r"<(\d+)>", nm)

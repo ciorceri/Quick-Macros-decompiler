@@ -12,7 +12,8 @@ names, callsigns, and the GUIDs of your own macros there; never commit it.
 Checks, for every file under ROOT (text AND binary, including this script):
   * forbidden extensions: .exe .ex$ .bin .chm (QM runtime / resource dumps /
     QM help must never be published)
-  * forbidden directories: .git, __pycache__, corpus, roundtrip
+  * forbidden directories: __pycache__, corpus, roundtrip (a `.git` folder
+    is git's own storage and is skipped; only tracked files get published)
   * files larger than 5 MB
   * forbidden tokens from tools/forbidden_tokens.txt (plain substrings and
     regexes, case-insensitive; each searched as ASCII/UTF-8 and as UTF-16LE).
@@ -35,7 +36,7 @@ TOKENS = HERE / "forbidden_tokens.txt"
 MAX_BYTES = 5 * 1024 * 1024
 BAD_EXT = {".exe", ".bin", ".chm"}
 BAD_NAME_SUFFIX = ("ex$",)  # names ending in .ex$
-BAD_DIRS = {".git", "__pycache__", "corpus", "roundtrip"}
+BAD_DIRS = {"__pycache__", "corpus", "roundtrip"}
 
 
 def load_tokens() -> tuple[list[str], list[re.Pattern[str]]]:
@@ -186,6 +187,8 @@ def main(argv: list[str]) -> int:
     for p in sorted(root.rglob("*")):
         rel = p.relative_to(root)
         parts = set(rel.parts)
+        if ".git" in parts:
+            continue
         if p.is_dir():
             if p.name in BAD_DIRS:
                 problems.append(f"{rel}: forbidden directory")

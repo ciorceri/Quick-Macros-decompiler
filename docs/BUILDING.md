@@ -11,7 +11,7 @@ text has to be pasted into a QM item.
 
 ## Steps
 
-1. Decompile the exe. Set `QM_SYSTEM_QML` to your QM `System.qml` first; then the copies of QM's own library functions
+1. Decompile the exe. Set `QM_SYSTEM_QML` to your QM `System.qml` first (recommended; a short built-in list covers only the three functions seen so far); then the copies of QM's own library functions
    (`ShutDownProcess`, `GetWinStyle`, ...) are left out:
 
    ```

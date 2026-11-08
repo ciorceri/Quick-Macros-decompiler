@@ -99,7 +99,9 @@ details: [docs/BUILDING.md](docs/BUILDING.md).
 functions the macro calls (items of `System.qml`, e.g. `ShutDownProcess`). They are not part of your script: the macro
 resolves them from `System.qml` when it is compiled, so importing them as items is unnecessary. With `QM_SYSTEM_QML` set,
 these functions are left out by default and a `; Omitted ...` line lists them; `--with-library` writes them as well.
-Without `QM_SYSTEM_QML` they cannot be told apart from your own functions, so everything is written.
+Without `QM_SYSTEM_QML` a short built-in list of the library functions seen so far (`GetWinStyle`, `ShutDownProcess`,
+`TriggerWindow`) is used; any other library function is written like your own. If one of your own functions has one of
+these names, use `--with-library`.
 
 Note on compiling: QM compiles one item per text, and `function` must be the first code line of an item (only comments
 may precede it). A file holding several functions therefore compiles only if each extra function is a `#sub name` section
