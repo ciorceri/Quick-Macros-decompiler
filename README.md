@@ -87,6 +87,12 @@ Decompiler output is valid QM syntax:
   `loc<i>`, globals `glob<id>`, user types `type_<id>`; labels, comments and formatting are lost. Function and `#sub` names are real.
 * Builtin DLL/runtime calls are named from the exe's own resource tables.
 
+### Building an exe from the output
+
+The output is plain text, and QM cannot open it with `File > Open` ("Not a QM file": QM files are SQLite databases). Create a
+new macro in QM, paste the text, compile it (Ctrl+F8) and use Run > Make Exe, choosing the folder for the exe. Steps and
+details: [docs/BUILDING.md](docs/BUILDING.md).
+
 ### One item, one file
 
 `qmdec.py` writes the main macro plus any `#sub` sections of its own. A QM exe also embeds copies of the standard-library
