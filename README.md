@@ -87,6 +87,13 @@ Decompiler output is valid QM syntax:
   `loc<i>`, globals `glob<id>`, user types `type_<id>`; labels, comments and formatting are lost. Function and `#sub` names are real.
 * Builtin DLL/runtime calls are named from the exe's own resource tables.
 
+### Project block
+
+The output ends with a `BEGIN PROJECT ... END PROJECT` block (main function, `exe_file`, manifest, flags, GUID), so QM can
+open the `.qml` as a ready item. The main function name and the GUID are read from the exe; icon, manifest and flags are
+the QM defaults. `exe_file` is the bare file name (`<name>.exe`); `--exe-dir FOLDER` puts a folder in front of it (QM path
+variables such as `$desktop$` work), `--no-project` leaves the block out.
+
 ### One item, one file
 
 `qmdec.py` writes the main macro plus any `#sub` sections of its own. A QM exe also embeds copies of the standard-library
