@@ -1,0 +1,494 @@
+{
+ "_doc": "Builtin table from compile_samples2/sample24_builtin_funcs.exe (QM 2.4.12, known source). Order mapping: stream entries 1..22 = source lines 9..31 in order (entry 0 = `str s=...`, decls produce no statement, scan was dropped, 2 x out follow). 2026-11-08: the 0x49 id->name mapping is NOT stored in qm.exe or any shared table: every QM exe carries its OWN table in PE resources 8/9 (see res9_tables.json); statuses below are 'observed (res9)'.",
+ "status_rule": "observed = opcode/id occurs in exactly one statement mapped by source order and handler/arg shape agrees",
+ "dedicated_opcodes": {
+  "note": "All builtins of this exe except ProcessNameToId compile to DEDICATED table-1 opcodes, not 0x49.",
+  "opcode_to_name": {
+   "0xe7": "win",
+   "0x8c": "child",
+   "0xb4": "id",
+   "0x9b": "empty (byte1 0x65)",
+   "0xba": "len (byte1 0x6c)",
+   "0x9f": "find",
+   "0xa7": "findb",
+   "0xa0": "findc",
+   "0xa6": "findl",
+   "0xa8": "findrx",
+   "0xa5": "findt",
+   "0xa4": "findw",
+   "0xc4": "matchw",
+   "0xc5": "numlines",
+   "0xe6": "val",
+   "0xb2": "iif",
+   "0xe2": "tok",
+   "0xce": "perf",
+   "0xcd": "pixel",
+   "0x96": "dir"
+  }
+ },
+ "ids_0x49": {
+  "523": {
+   "name": "ProcessNameToId",
+   "argc": 3,
+   "status": "observed",
+   "version": "2.4.12",
+   "arg_kinds_coded_order": [
+    "int const 0",
+    "int const 0",
+    "str; last coded = first parameter"
+   ],
+   "evidence": "sample24 stmt 21 (only 0x49 in exe, source line 30); also 523/argc 3 in sample05, sample18, sample26 whose sources call ProcessNameToId; res9 of sample24/05/18/26: 523 = ProcessNameToId (dll index 0 = '')",
+   "res9": {
+    "name": "ProcessNameToId",
+    "dll": "",
+    "dll_index": 0,
+    "flag_0x8000": false
+   }
+  },
+  "503": {
+   "name": "ProcessNameToId",
+   "argc": 3,
+   "status": "observed",
+   "version": "2.4.2",
+   "evidence": "res9 of the QM 2.4.2 exes original-1/2/3: 503 = ProcessNameToId (dll index 1 = ''); argc 3 in ShutDownProcess. (Earlier claim 'inferred by +20 shift from 523' is superseded: the name comes from that exe's own table.)",
+   "res9": {
+    "name": "ProcessNameToId",
+    "dll": "",
+    "dll_index": 1,
+    "flag_0x8000": false
+   }
+  },
+  "5": {
+   "name": "IsWindowVisible",
+   "status": "observed",
+   "argc": 1,
+   "version": "2.4.2 and 2.4.12",
+   "evidence": "res9 of the QM 2.4.2 exe original-1: 5 = IsWindowVisible (dll 'user32', index 0); 2.4.12 sample26 res9: same id 5 = IsWindowVisible",
+   "res9": {
+    "name": "IsWindowVisible",
+    "dll": "user32",
+    "dll_index": 0,
+    "flag_0x8000": false
+   }
+  },
+  "6": {
+   "name": "IsWindow",
+   "status": "observed",
+   "argc": 1,
+   "version": "2.4.2 and 2.4.12",
+   "evidence": "res9 of the QM 2.4.2 exe original-1: 6 = IsWindow (dll 'user32', index 0); 2.4.12 sample26 res9: same id 6 = IsWindow",
+   "res9": {
+    "name": "IsWindow",
+    "dll": "user32",
+    "dll_index": 0,
+    "flag_0x8000": false
+   }
+  },
+  "221": {
+   "name": "GetLastError",
+   "status": "observed",
+   "argc": 0,
+   "version": "2.4.2",
+   "evidence": "res9 of the QM 2.4.2 exe original-1: 221 = GetLastError (dll 'kernel32', index 2)",
+   "res9": {
+    "name": "GetLastError",
+    "dll": "kernel32",
+    "dll_index": 2,
+    "flag_0x8000": false
+   },
+   "note": "2.4.12 sample26 has GetLastError at id 232 (its own res9); no shift rule is used or needed"
+  },
+  "224": {
+   "name": "TerminateProcess",
+   "status": "observed",
+   "argc": 2,
+   "version": "2.4.2",
+   "evidence": "res9 of the QM 2.4.2 exe original-1: 224 = TerminateProcess (dll 'kernel32', index 2)",
+   "res9": {
+    "name": "TerminateProcess",
+    "dll": "kernel32",
+    "dll_index": 2,
+    "flag_0x8000": false
+   },
+   "note": "2.4.12 sample26 has TerminateProcess at id 235 (its own res9)"
+  },
+  "225": {
+   "name": "CloseHandle",
+   "status": "observed",
+   "argc": 1,
+   "version": "2.4.2",
+   "evidence": "res9 of the QM 2.4.2 exe original-1: 225 = CloseHandle (dll 'kernel32', index 2)",
+   "res9": {
+    "name": "CloseHandle",
+    "dll": "kernel32",
+    "dll_index": 2,
+    "flag_0x8000": false
+   },
+   "note": "2.4.12 sample26 has CloseHandle at id 236 (its own res9)"
+  }
+ },
+ "id_space_note": {
+  "statement": "The 0x49 id space is per exe: ids are keys of that exe's own res9 table (QM 2.4.2 and 2.4.12 builds number the same functions differently; ids 5, 6, 71, 78 happen to coincide).",
+  "evidence": "res9 dumps (analysis/res9_tables.json). Same functions: QM 2.4.2 original-1 221/223/224/225/362/406/501/503 = GetLastError/OpenProcess/TerminateProcess/CloseHandle/GetStateTextW/WTSTerminateProcess/IsHungWindow/ProcessNameToId; 2.4.12 sample26 232/234/235/236/426/195(IsHungAppWindow)/523 + 584 __WinTest; sample02 380 = GetStateTextW.",
+  "confidence": "observed",
+  "consequence": "qmdec names every 0x49 call from the exe's own res9; the previous +11/+18/+20 shift heuristic and the inferred 503 mapping are removed (the shifts were only the visible effect of different tables, not a rule). The earlier claim that the table lives in qm.exe is DROPPED: it is in each exe's resources 8/9."
+ },
+ "statements": [
+  {
+   "stream_index": 1,
+   "source_line": 9,
+   "source": "a=win(\"Notepad\")",
+   "name": "win",
+   "opcode": "0xe7",
+   "header_bytes": "v=01 (k=1 -> one S)",
+   "args_coded_order": [
+    "str const"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x428895: 0x40b14b reads v, k=v&0x1f=1 -> 1 S (X_E7)"
+  },
+  {
+   "stream_index": 2,
+   "source_line": 10,
+   "source": "b=child(\"Edit\" \"\" a)",
+   "name": "child",
+   "opcode": "0x8c",
+   "header_bytes": "b=03 (flag bits 7/6/5 clear; m=b&0x1f=3)",
+   "args_coded_order": [
+    "str const (class)",
+    "str const (empty)",
+    "int var a"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x428de6: m>=1,2,3 -> three S; coded in source order"
+  },
+  {
+   "stream_index": 3,
+   "source_line": 11,
+   "source": "b=id(15 a)",
+   "name": "id",
+   "opcode": "0xb4",
+   "header_bytes": "n=02",
+   "args_coded_order": [
+    "int const 15",
+    "int var a"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x429260: reads n, S, S, third S only if n>2"
+  },
+  {
+   "stream_index": 4,
+   "source_line": 12,
+   "source": "a=empty(s)",
+   "name": "empty",
+   "opcode": "0x9b",
+   "header_bytes": "byte1=0x65 (ASCII 'e')",
+   "args_coded_order": [
+    "str var s"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x42505a shared with 0xba: byte 0x6c -> len, else empty (cmp edi,0x6c at 0x42507f)"
+  },
+  {
+   "stream_index": 5,
+   "source_line": 13,
+   "source": "a=len(s)",
+   "name": "len",
+   "opcode": "0xba",
+   "header_bytes": "byte1=0x6c (ASCII 'l')",
+   "args_coded_order": [
+    "str var s"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "same handler 0x42505a, cmp edi,0x6c"
+  },
+  {
+   "stream_index": 6,
+   "source_line": 14,
+   "source": "a=find(s \"two\")",
+   "name": "find",
+   "opcode": "0x9f",
+   "header_bytes": "n=02",
+   "args_coded_order": [
+    "str var s",
+    "str const"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x425208: S,S, n>2 S, n>3 S"
+  },
+  {
+   "stream_index": 7,
+   "source_line": 15,
+   "source": "a=findb(s \"o\")",
+   "name": "findb",
+   "opcode": "0xa7",
+   "header_bytes": "n=02",
+   "args_coded_order": [
+    "str var s",
+    "str const"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x425556: 0x40ae1d (S), S; n==2 ends"
+  },
+  {
+   "stream_index": 8,
+   "source_line": 16,
+   "source": "a=findc(s \"o\")",
+   "name": "findc",
+   "opcode": "0xa0",
+   "header_bytes": "flags=04",
+   "args_coded_order": [
+    "str var s",
+    "str const (flag 4: second arg taken as a char, movsx byte [eax] at 0x425317)"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x4252ca: flags byte, S, S, flags&1 -> 3rd S"
+  },
+  {
+   "stream_index": 9,
+   "source_line": 17,
+   "source": "a=findl(s 1)",
+   "name": "findl",
+   "opcode": "0xa6",
+   "header_bytes": "n=02, u16=0x0005 (read by 0x40adb0)",
+   "args_coded_order": [
+    "str var s",
+    "int const 1"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x4254b7 via 0x40af67 format \"*&ii\" (0x463164): n, u16, n x S",
+   "note": "u16 5 is a per-call table index (findl=5 findt=6 findrx=7? dir=9), not proven to be the 0x49 id 5"
+  },
+  {
+   "stream_index": 10,
+   "source_line": 18,
+   "source": "a=findrx(s \"t.o\")",
+   "name": "findrx",
+   "opcode": "0xa8",
+   "header_bytes": "hdr 02 07 (second byte meaning not established)",
+   "args_coded_order": [
+    "str var s",
+    "str const"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x425790 (option-count dependent S reads); only the 2-arg form is seen"
+  },
+  {
+   "stream_index": 11,
+   "source_line": 19,
+   "source": "a=findt(s 1)",
+   "name": "findt",
+   "opcode": "0xa5",
+   "header_bytes": "n=02, u16=0x0006",
+   "args_coded_order": [
+    "str var s",
+    "int const 1"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x42546e via 0x40af67 format \"*&iiii\" (0x4632c8)"
+  },
+  {
+   "stream_index": 12,
+   "source_line": 20,
+   "source": "a=findw(s \"two\")",
+   "name": "findw",
+   "opcode": "0xa4",
+   "header_bytes": "n=01",
+   "args_coded_order": [
+    "str const 'two' (coded first)",
+    "str var s (coded second)"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x425405: 0x40aebb (n, n x S) then one more S via 0x40adcc; operands appear in reverse source order (from bytes; handler does not name them)"
+  },
+  {
+   "stream_index": 13,
+   "source_line": 21,
+   "source": "a=matchw(s \"one*\")",
+   "name": "matchw",
+   "opcode": "0xc4",
+   "header_bytes": "n=02",
+   "args_coded_order": [
+    "str var s",
+    "str const"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x42560a: 0x40aebb (n, n x S)"
+  },
+  {
+   "stream_index": 14,
+   "source_line": 22,
+   "source": "a=numlines(s)",
+   "name": "numlines",
+   "opcode": "0xc5",
+   "header_bytes": "",
+   "args_coded_order": [
+    "str var s"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x4251e8: inc ip; one S"
+  },
+  {
+   "stream_index": 15,
+   "source_line": 23,
+   "source": "a=val(\"123\")",
+   "name": "val",
+   "opcode": "0xe6",
+   "header_bytes": "byte1=00 (meaning not established)",
+   "args_coded_order": [
+    "str const"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x425156: S then helpers 0x43b030/0x43b1f0/0x43b130"
+  },
+  {
+   "stream_index": 16,
+   "source_line": 24,
+   "source": "a=iif(a>0 1 2)",
+   "name": "iif",
+   "opcode": "0xb2",
+   "header_bytes": "layout [1,S,4,S,S,2]",
+   "args_coded_order": [
+    "cond block a>0",
+    "int const 1",
+    "int const 2"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "single 0xb2; layout already tiled; handler 0x421bc5 dispatches S twice"
+  },
+  {
+   "stream_index": 17,
+   "source_line": 25,
+   "source": "a=sizeof(int)",
+   "name": "sizeof",
+   "opcode": "(folded)",
+   "header_bytes": "",
+   "args_coded_order": [],
+   "wrapper": "24 dest(int) 1b 04",
+   "status": "observed",
+   "evidence": "compile-time constant 4; no call",
+   "note": "not a runtime builtin"
+  },
+  {
+   "stream_index": 18,
+   "source_line": 27,
+   "source": "a=tok(s ta)",
+   "name": "tok",
+   "opcode": "0xe2",
+   "header_bytes": "n=02 flag=05",
+   "args_coded_order": [
+    "str var s",
+    "array var ta"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x4254f2 via 0x40af07; layout [3,X_E2]"
+  },
+  {
+   "stream_index": 19,
+   "source_line": 28,
+   "source": "a=perf",
+   "name": "perf",
+   "opcode": "0xce",
+   "header_bytes": "",
+   "args_coded_order": [],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x421fd6: inc ip, 0x43b58e; no operands"
+  },
+  {
+   "stream_index": 20,
+   "source_line": 29,
+   "source": "a=pixel(1 1)",
+   "name": "pixel",
+   "opcode": "0xcd",
+   "header_bytes": "n=02",
+   "args_coded_order": [
+    "int const x",
+    "int const y"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "handler 0x421f69 -> 0x40b50d -> 0x40b175: 2 S; n>2 optional extras"
+  },
+  {
+   "stream_index": 21,
+   "source_line": 30,
+   "source": "a=ProcessNameToId(\"notepad.exe\")",
+   "name": "ProcessNameToId",
+   "opcode": "0x49",
+   "header_bytes": "49 | 00 (ret type int) | 00 20 (type tag bytes copied to ctx+0x18/0x19) | 03 (argc) | 0b 02 (id=0x020b=523)",
+   "args_coded_order": [
+    "int const 0",
+    "int const 0",
+    "str const (LAST coded = FIRST parameter)"
+   ],
+   "wrapper": "24 dest(int) <call>",
+   "status": "observed",
+   "evidence": "only 0x49 statement of the exe; handler 0x429650: argc at pos+4, id u16 at pos+5, table lookup 0x429520",
+   "id_0x49": 523
+  },
+  {
+   "stream_index": 22,
+   "source_line": 31,
+   "source": "str d=dir(\"c:\\*.*\")",
+   "name": "dir",
+   "opcode": "0x96",
+   "header_bytes": "n=01, u16=0x0009",
+   "args_coded_order": [
+    "str const"
+   ],
+   "wrapper": "34 dest(str) <call>",
+   "status": "observed",
+   "evidence": "handler 0x421dad via 0x40af67 format \"*&ii\": n, u16, n x S"
+  }
+ ],
+ "res9_mechanism": {
+  "status": "observed",
+  "layout": "PE resource name 8 = u16 count + count NUL-terminated dll names (an empty name is a valid entry); resource 9 = u16 count + entries {u16 id, u16 dll (low 15 bits = index into res8; 0x8000 = flag, e.g. 32771 = dll 3 + flag), name NUL}; resource 10 (sample25 only) = u16 count + 8-byte records {u16 id, u16 0, u16 type, u16 0} = hidden global variables read by opcode 0x20.",
+  "evidence": "handler 0x429650 -> 0x429520 -> 0x4294d0 looks the u16 id of opcode 0x49 up in the table built from res8/res9 at load; GetProcAddress resolves it (validator handler re-read + res9 dumps of all 31 exes, parsed by qmtool.parse_res8/9/10; audit_level1.py checks framing).",
+  "dump": "analysis/res9_tables.json"
+ },
+ "groupL_samples27_30": {
+  "status": "observed (bytes + known .qml source, statement order == stream order)",
+  "res9_per_exe": {
+   "sample27_order_swap": "no res8/res9 (no 0x49 call)",
+   "sample28_str_methods": "no res8/res9",
+   "sample29_commands_more": "no res8/res9, but PE resource 11 present",
+   "sample30_types_pointers": "no res8/res9"
+  },
+  "res11": {
+   "status": "observed",
+   "what": "sample29 only: PE resource name 11 = 45568-byte MZ DLL (KERNEL32/msvcrt imports, string \"unzip 0.15 Copyright 1998 Gilles Vollant\"); the exe embeds the zip library when the macro uses `zip`. audit_level1 allows name 11."
+  },
+  "dedicated_opcodes_added": {
+   "0xcb": "ont (statement and function, same bytes)",
+   "0xeb": "xm (inferred)",
+   "0xec": "ym (inferred)",
+   "0xd6": "rget (inferred)",
+   "0xd7": "rset (inferred)",
+   "0xb3": "inp (inferred)",
+   "0xcf": "qmitem (inferred)",
+   "0xc7": "net (inferred)",
+   "0xd5": "run as function `a=run(..)` (observed, same bytes as the statement)",
+   "0xbc/0xbd/0xd3": "min/max/res as functions `a=min(w)` (observed, same bytes as the statements)"
+  },
+  "note": "None of the sample29 functions is a 0x49 DLL call: all compile to dedicated opcodes. res9 id tables of samples 27-30 are empty (analysis/res9_tables.json regenerated for 35 exes)."
+ }
+}

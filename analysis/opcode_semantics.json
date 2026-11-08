@@ -1,0 +1,4751 @@
+{
+ "ARG:0x7c": {
+  "name": "arg_7c",
+  "operands": "7c S u16",
+  "qm_construct": "argument prefix in 0x52/0x01 call arg lists: first arg `w` of Acc.Find (`7c (09 L2) 03 00`) - by-value int with type word 3; stdlib passes `0900`",
+  "evidence": "helper 0x4299f8 (layout `ARGN` in layout_final); samples 03 #6, 07 #7",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": null,
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample02:Acc.GetChildObjects": 1,
+   "sample03:Macro1": 1,
+   "sample07:Macro1": 1
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 1
+ },
+ "T1:0x03": {
+  "name": "blk (expression block)",
+  "operands": "03 len16 | S(first operand) | T2*(operator+rhs) | 2 trailer bytes (type tag, flags; copied to ctx+0x18/0x19). len counts from the opcode byte: total = len+3. Trailer = 00 00 in all 12 sample occurrences, other values unseen.",
+  "qm_construct": "Infix expression `a OP b` used as a value/condition: `pid=0`, `find(..)>=0`, `st&0x10`, `(st&0x100000) and (st&0x200000)`, `all.len`-free comparisons.",
+  "evidence": "handler 0x412310 (dispatch S then loop T2 while ip<start+len); sample05 #2 `if(pid=0)` = ad 04 00 | 03 09 00 | 09 1f 01 00 | 00 1b 00 | 00 00; sample06 #3/#10/#12; sample02 #12 (nested blocks joined by T2 0x0c `and`); sample03 #10; tiling ok",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x412310",
+  "layout_tokens": [
+   "BLOCK"
+  ],
+  "samples_seen": {
+   "sample02:Acc.Find": 1,
+   "sample02:Acc.GetChildObjects": 3,
+   "sample02:Acc.State": 1,
+   "sample02:Macro1": 3,
+   "sample03:Acc.Find": 1,
+   "sample03:Acc.State": 1,
+   "sample03:Macro1": 1,
+   "sample05:Macro1": 1,
+   "sample06:Macro1": 3,
+   "sample07:Acc.Find": 1
+  },
+  "macro1_occurrences": 8,
+  "stdlib_occurrences": 8
+ },
+ "T1:0x06": {
+  "name": "not",
+  "operands": "op S",
+  "qm_construct": "logical not `!x` (`if(!w)`, `if(!dlg)`, `if(!(st&0x10))`)",
+  "evidence": "handler 0x4127d0: dispatch S, result = (acc==0) as 0/1; sample02 #3, sample03 #3/#10, sample04 #4, sample07 #4",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4127d0",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Acc.Find": 1,
+   "sample02:Acc.FromWindow": 1,
+   "sample02:Acc.GetChildObjects": 1,
+   "sample02:Acc.State": 1,
+   "sample02:Macro1": 1,
+   "sample03:Acc.Find": 1,
+   "sample03:Acc.State": 1,
+   "sample03:Macro1": 2,
+   "sample04:Macro1": 1,
+   "sample07:Acc.Find": 1,
+   "sample07:Acc.Value": 1,
+   "sample07:Macro1": 1
+  },
+  "macro1_occurrences": 5,
+  "stdlib_occurrences": 8
+ },
+ "T1:0x08": {
+  "name": "to_dbl (implicit int->double conversion)",
+  "operands": "08 S",
+  "qm_construct": "not written in the source: wraps an integer-typed value that must be returned/passed as double, e.g. `function^ a` + `ret a/2` = d0 01 08 [03 .. a/2 ..] (block type 0 = int division, then converted)",
+  "evidence": "handler 0x412850 (2.4.12): dispatch S, `fild qword [ctx]`, ctx type byte = 5 (double), flag 0; sample31 <00001>Half #0 `d0 01 08 03 09 00 09 1f 00 00 04 1b 02 00 00 20`; earlier: stdlib `08 1b 00`",
+  "confidence": "observed",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x412850",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Acc.GetChildObjects": 1
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 1,
+  "groupM": true
+ },
+ "T1:0x09": {
+  "name": "ld_i32",
+  "operands": "op S(address expr)",
+  "qm_construct": "read an int variable / int member (`loopCount`, `w`, `pid`, `st`, `i` as rvalue)",
+  "evidence": "handler 0x412380: dispatch S -> pointer in ctx+0x14 (must be >=0x10000), eax=[ptr], cdq into 64-bit accumulator (sign-extend); every int rvalue in samples 01-07",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x412380",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample01:Macro1": 3,
+   "sample02:Acc.Find": 6,
+   "sample02:Acc.FromWindow": 5,
+   "sample02:Acc.GetChildObjects": 4,
+   "sample02:Acc.State": 8,
+   "sample02:Macro1": 7,
+   "sample03:Acc.Find": 6,
+   "sample03:Acc.State": 8,
+   "sample03:Macro1": 4,
+   "sample04:Macro1": 1,
+   "sample05:Macro1": 2,
+   "sample06:Macro1": 1,
+   "sample07:Acc.Find": 6,
+   "sample07:Acc.Value": 1,
+   "sample07:Macro1": 2
+  },
+  "macro1_occurrences": 20,
+  "stdlib_occurrences": 44
+ },
+ "T1:0x0a": {
+  "name": "ld_u32",
+  "operands": "op S(address expr)",
+  "qm_construct": "read a 32-bit pointer value: the char* of a `str` variable (args of win(), find(), F-string temp passed to out, ARG of ProcessNameToId) and pointer members such as `cb.a`",
+  "evidence": "handler 0x4123c0: same as 0x09 but zero-extends (mov [esi+4],0); sample02 #2 `(0a L0)` for appTitle, sample03 #7 `0a (13 L3 2340)` = cb.a, sample01 #4 `c9 00 0a 37 ..`",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4123c0",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample01:Macro1": 3,
+   "sample02:Acc.Find": 15,
+   "sample02:Acc.GetChildObjects": 8,
+   "sample02:Acc.State": 4,
+   "sample02:Macro1": 3,
+   "sample03:Acc.Find": 15,
+   "sample03:Acc.State": 4,
+   "sample03:Macro1": 3,
+   "sample04:Macro1": 2,
+   "sample05:Macro1": 2,
+   "sample06:Macro1": 7,
+   "sample07:Acc.Find": 15,
+   "sample07:Acc.Value": 1,
+   "sample07:Macro1": 4
+  },
+  "macro1_occurrences": 24,
+  "stdlib_occurrences": 62
+ },
+ "T1:0x0c": {
+  "name": "ld_0c",
+  "operands": "op S",
+  "qm_construct": "unknown read variant (docs: deref int16)",
+  "evidence": "only stdlib Acc.Find #4 `d9 .. (0c (13 L0 <0200>))`; handler not re-read; no source",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x412440",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Acc.Find": 1,
+   "sample03:Acc.Find": 1,
+   "sample07:Acc.Find": 1
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 3
+ },
+ "T1:0x0d": {
+  "name": "ld_0d",
+  "operands": "op S",
+  "qm_construct": "unknown read variant (docs: deref double / 8 bytes)",
+  "evidence": "only stdlib Acc.Find `(0d L5)`; no source",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x412480",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Acc.Find": 2,
+   "sample03:Acc.Find": 2,
+   "sample07:Acc.Find": 2
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 6
+ },
+ "T1:0x11": {
+  "name": "byref",
+  "operands": "op S",
+  "qm_construct": "address of a variable passed by reference: ARRAY var `all` as 1st arg of GetChildObjects(all -1 \"TEXT\"); `(11 LV..)` cleanup in stdlib",
+  "evidence": "handler 0x412080: dispatch S, acc = ctx+0x14 (address), ++ctx+0x19 (flag), hi=0; sample02 #8 `(11 L4)`",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x412080",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Acc.Find": 1,
+   "sample02:Acc.FromWindow": 1,
+   "sample02:Acc.GetChildObjects": 2,
+   "sample02:Acc.State": 2,
+   "sample02:Macro1": 1,
+   "sample03:Acc.Find": 1,
+   "sample03:Acc.State": 2,
+   "sample07:Acc.Find": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 10
+ },
+ "T1:0x12": {
+  "name": "member+ofs",
+  "operands": "op S t1 t2 u16",
+  "qm_construct": "struct member at byte offset u16 (t1,t2 = type tag/flags copied to ctx+0x18/0x19); stdlib reads (Acc fields +4 / +8)",
+  "evidence": "handler 0x4120b0 (reads two type bytes, then adds u16 to the pointer); only stdlib Acc.* (e.g. `12 e1 24 00 00 04 00`); no source",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x4120b0",
+  "layout_tokens": [
+   1,
+   "S",
+   4
+  ],
+  "samples_seen": {
+   "sample02:Acc.Find": 1,
+   "sample02:Acc.FromWindow": 1,
+   "sample02:Acc.State": 4,
+   "sample03:Acc.Find": 1,
+   "sample03:Acc.State": 4,
+   "sample07:Acc.Find": 1,
+   "sample07:Acc.Value": 1
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 13
+ },
+ "T1:0x13": {
+  "name": "member",
+  "operands": "op S t1 t2",
+  "qm_construct": "struct member at offset 0 with type bytes: `cb.a` / `a.a` = `13 S 23 40` (type 0x23 flags 0x40 = IAccessible* member)",
+  "evidence": "handler 0x412110: dispatch S, store next two bytes into ctx+0x18/0x19; sample03 #7, sample07 #8 (`if(cb.a)`, `if(a.a)`) - identical bytes `13 1f xx 00 23 40` in both",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x412110",
+  "layout_tokens": [
+   1,
+   "S",
+   2
+  ],
+  "samples_seen": {
+   "sample02:Acc.Find": 2,
+   "sample02:Acc.FromWindow": 1,
+   "sample02:Acc.GetChildObjects": 2,
+   "sample02:Acc.State": 3,
+   "sample03:Acc.Find": 2,
+   "sample03:Acc.State": 3,
+   "sample03:Macro1": 1,
+   "sample07:Acc.Find": 2,
+   "sample07:Acc.Value": 2,
+   "sample07:Macro1": 1
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 17
+ },
+ "T1:0x19": {
+  "name": "i32",
+  "operands": "op imm32",
+  "qm_construct": "int constant not fitting in a byte (0x100000, 0x200000, -1, 0xffff)",
+  "evidence": "fixed 5 bytes; sample02 #12 `19 00 00 10 00` = 0x100000, `19 ff ff ff ff` = -1 (GetChildObjects arg); matches source",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40eb02",
+  "layout_tokens": [
+   5
+  ],
+  "samples_seen": {
+   "sample02:Acc.Find": 3,
+   "sample02:Acc.GetChildObjects": 2,
+   "sample02:Macro1": 3,
+   "sample03:Acc.Find": 3,
+   "sample07:Acc.Find": 3
+  },
+  "macro1_occurrences": 3,
+  "stdlib_occurrences": 11
+ },
+ "T1:0x1b": {
+  "name": "u8",
+  "operands": "op imm8",
+  "qm_construct": "small int constant 0..255 (`=0`, `=42`, `+1`, `0` arg, `0x10`, wait 1)",
+  "evidence": "fixed 2 bytes; sample01 `1b 2a` = 42 (int nLines=42), `1b 01`, `1b 10` (st&0x10)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40eb46",
+  "layout_tokens": [
+   2
+  ],
+  "samples_seen": {
+   "sample01:Macro1": 4,
+   "sample02:<00257>Callback": 1,
+   "sample02:Acc.Find": 1,
+   "sample02:Acc.FromWindow": 2,
+   "sample02:Acc.GetChildObjects": 4,
+   "sample02:Acc.State": 6,
+   "sample02:Macro1": 1,
+   "sample03:Acc.Find": 1,
+   "sample03:Acc.State": 6,
+   "sample03:Macro1": 2,
+   "sample04:Macro1": 2,
+   "sample05:Macro1": 3,
+   "sample06:Macro1": 6,
+   "sample07:Acc.Find": 1,
+   "sample07:Macro1": 1
+  },
+  "macro1_occurrences": 19,
+  "stdlib_occurrences": 22
+ },
+ "T1:0x1e": {
+  "name": "frame_addr / const ptr",
+  "operands": "op u32",
+  "qm_construct": "string literal / constant-pool pointer: result = [ctx+0x38]+0x14 + u32, type tag 3. [ctx+0x38]+0x14 = block header dword #5 (ptr5) = pool data base = block+0x48+(ptr5-ptr0) in res4.",
+  "evidence": "handler 0x40ebab (`add eax,[esi+0x14]`, mov byte [ctx+0x18],3); every `1e` ref of all 16 sample functions lands on a NUL-terminated string start (sample01: 0,29,50,98 = the 4 string literals); pool base differs per function",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40ebab",
+  "layout_tokens": [
+   5
+  ],
+  "samples_seen": {
+   "sample01:Macro1": 4,
+   "sample02:Acc.Find": 3,
+   "sample02:Acc.FromWindow": 3,
+   "sample02:Acc.GetChildObjects": 3,
+   "sample02:Acc.State": 3,
+   "sample02:Macro1": 7,
+   "sample03:Acc.Find": 3,
+   "sample03:Acc.State": 3,
+   "sample03:Macro1": 9,
+   "sample04:Macro1": 3,
+   "sample05:Macro1": 3,
+   "sample06:Macro1": 8,
+   "sample07:Acc.Find": 3,
+   "sample07:Acc.Value": 1,
+   "sample07:Macro1": 9
+  },
+  "macro1_occurrences": 43,
+  "stdlib_occurrences": 22
+ },
+ "T1:0x1f": {
+  "name": "loc (local address)",
+  "operands": "op idx16",
+  "qm_construct": "address of local variable #idx (declaration order; hidden temps for F-strings / str-returning calls get their own slot at first use)",
+  "evidence": "handler 0x412500: IP+=3; entry = [[ctx+0x38]+8] + idx*8; addr = ctx+0x20 + entry.u32; type byte = entry.u16 (<0x2a else 0xff) -> ctx+0x18, flags = entry.u8 -> ctx+0x19. Descriptor table = header section ptr2 (size 8*count, count = u16 at block+0x2a). Types seen: int=0, str=4 (16-byte slot), Acc=0x24, ARRAY=0x0d. sample01: 5 locals = loopCount + 3 F temps + nLines",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x412500",
+  "layout_tokens": [
+   3
+  ],
+  "samples_seen": {
+   "sample01:Macro1": 9,
+   "sample02:Acc.Find": 28,
+   "sample02:Acc.FromWindow": 5,
+   "sample02:Acc.GetChildObjects": 14,
+   "sample02:Acc.State": 16,
+   "sample02:Macro1": 21,
+   "sample03:Acc.Find": 28,
+   "sample03:Acc.State": 16,
+   "sample03:Macro1": 13,
+   "sample04:Macro1": 6,
+   "sample05:Macro1": 6,
+   "sample06:Macro1": 16,
+   "sample07:Acc.Find": 28,
+   "sample07:Macro1": 12
+  },
+  "macro1_occurrences": 83,
+  "stdlib_occurrences": 135
+ },
+ "T1:0x21": {
+  "name": "by-reference parameter slot",
+  "operands": "21 idx16",
+  "qm_construct": "`str&sr` parameter used as a value/receiver: `sr.from(\"x\" sFile)`, `ret sr.len`; also thread variables `int- t_i` (sample34: `24 21 00 00 1b 05`, descriptor flag byte 4 + a 12-byte thread record names it)",
+  "evidence": "handler 0x412540 = 0x1f + one dereference; sample31 <00001>StrRef #0 (`sr.from(\"x\" sFile)`) and #1 (`ret sr.len`); descriptor of the parameter: type 4, flags byte 4 (by-reference marker, seen once)",
+  "confidence": "observed",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x412540",
+  "layout_tokens": [
+   3
+  ],
+  "samples_seen": {
+   "sample02:<00257>Callback": 2,
+   "sample02:Acc.Find": 1,
+   "sample02:Acc.GetChildObjects": 3,
+   "sample02:Acc.State": 8,
+   "sample03:Acc.Find": 1,
+   "sample03:Acc.State": 8,
+   "sample07:Acc.Find": 1
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 24,
+  "groupM": true
+ },
+ "T1:0x24": {
+  "name": "st_i32",
+  "operands": "op S(dst addr) S(src)",
+  "qm_construct": "int assignment / initialisation `int x=expr`, `loopCount=0`",
+  "evidence": "handler 0x40f510: dispatch dst (ptr must be >=0x10000), dispatch src, convert/ store 32 bit; sample01 #0/#5, sample02 #2, sample03 #8, sample04 #3, sample05 #1, sample06 #9",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40f510",
+  "layout_tokens": [
+   1,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample01:Macro1": 2,
+   "sample02:Acc.FromWindow": 1,
+   "sample02:Acc.State": 2,
+   "sample02:Macro1": 2,
+   "sample03:Acc.State": 2,
+   "sample03:Macro1": 2,
+   "sample04:Macro1": 1,
+   "sample05:Macro1": 1,
+   "sample06:Macro1": 1,
+   "sample07:Macro1": 1
+  },
+  "macro1_occurrences": 10,
+  "stdlib_occurrences": 5
+ },
+ "T1:0x25": {
+  "name": "st_ptr",
+  "operands": "op S(dst var) S(src)",
+  "qm_construct": "pointer / lpstr store: `int* p=&i`, `double* dp=&d`, `long* lp=&L`, `MYT* tp=&t`, `str* sp=&t.s`, `lpstr ls=\"abc\"`; the src of `&x` is `11 S`",
+  "evidence": "sample30 stmts 1,20,22,29,37,39 (six source lines, six pointer-sized locals; descriptor byte +2 = 1 marks a pointer local). Semantic name `st_ptr` is INFERRED (the status `observed` applies to: emitted for pointer-typed destinations, descriptor byte+2 == 1). Handler 0x40f580 is a plain 32-bit store; it differs from 0x24 only in the double->int conversion (truncating fistp vs CRT helper). Not proven that sample02 stdlib uses are the same construct",
+  "name_confidence": "inferred",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40f580",
+  "layout_tokens": [
+   1,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Acc.GetChildObjects": 1,
+   "sample30:Macro1": 6,
+   "original-2:Acc.GetChildObjects": 1
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 1,
+  "groupL": true
+ },
+ "T1:0x2a": {
+  "name": "rmw_i32",
+  "operands": "op S(target) T2(op+rhs)",
+  "qm_construct": "compound update statement `x+1` (implicit `x+=1`) on an int variable",
+  "evidence": "handler 0x40f820: dispatch S, load *ptr into acc, then dispatch TABLE 2 (0x472490) with the following operator byte; sample01 #3 `2a 1f 00 00 01 1b 01` (loopCount+1), sample06 #11/#13 (nMatch+1)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40f820",
+  "layout_tokens": [
+   1,
+   "S",
+   "T2"
+  ],
+  "samples_seen": {
+   "sample01:Macro1": 1,
+   "sample02:Acc.Find": 3,
+   "sample02:Acc.State": 1,
+   "sample03:Acc.Find": 3,
+   "sample03:Acc.State": 1,
+   "sample06:Macro1": 2,
+   "sample07:Acc.Find": 3
+  },
+  "macro1_occurrences": 3,
+  "stdlib_occurrences": 11
+ },
+ "T1:0x30": {
+  "name": "wait_sec",
+  "operands": "op S(value)",
+  "qm_construct": "bare numeric statement `1` = wait 1 second (sleep)",
+  "evidence": "handler 0x4269ff: dispatch S, to double; if 0 -> 0x425ab3 (yield), -1/-2 special, else value*1000.0 (const 0x462910) -> ms -> 0x4052f1; sample01 #8 and sample04 #7 `30 1b 01` correspond to source line `1`",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4269ff",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample01:Macro1": 1,
+   "sample04:Macro1": 1
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0,
+  "sample23_forms": {
+   "wait 1": "30 1b 01",
+   "wait 0.5": "30 1c <f64 0.5>",
+   "wait -1": "30 19 ff ff ff ff",
+   "wait -2": "30 19 fe ff ff ff",
+   "note": "all four are 0x30 with an S operand (int 1b/19 or double 1c); -1/-2 are int32 literals 0x19; `wait 0` is not in sample23 (handler 0x4269ff treats 0 as yield, -1/-2 special)"
+  }
+ },
+ "T1:0x31": {
+  "name": "wait_for",
+  "operands": "op S(timeout s) kindbyte c  [S...]",
+  "qm_construct": "`wait(timeout WV win(..))`: kind = byte&0x1f: 4 = WV (poll IsWindowVisible), 5 = (IsWindowEnabled, same code path, inferred WE), 2/3/1/7/6 other wait kinds (not in samples); c = 3 in sample04 (meaning unknown); timeout `0` = infinite",
+  "evidence": "handler 0x427882 -> 0x42700f: dispatch S (seconds*1000, 0 -> -1), read kind byte + c, kind switch; kind 4 path 0x4272d3 calls IsWindowVisible (iat 0x46081c), kind 5 IsWindowEnabled (0x460630), kind 2 loops with IsWindow; sample04 #3 `31 1b 00 04 03 e7 02 ..`",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x427882",
+  "layout_tokens": [
+   1,
+   "S",
+   "X_E31"
+  ],
+  "samples_seen": {
+   "sample04:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0,
+  "wait_for_kinds_sample23": {
+   "format": "31 S(timeout) t c [S..]; kind=t&0x1f, t bit7 = negate; c=3 -> one S arg, c=2 -> none",
+   "kinds": {
+    "0x01": {
+     "name": "WA",
+     "source": "wait 5 WA \"Notepad\"; h=wait(5 WA ..)",
+     "bytes": "31 1b 05 01 03 1e <str> (#4; nested in `24 1f 00 00 31..` #8)",
+     "confidence": "observed"
+    },
+    "0x02": {
+     "name": "WC",
+     "source": "wait 5 WC \"Notepad\"",
+     "bytes": "31 1b 05 02 03 1e <str> (#5); handler kind 2 loops IsWindow",
+     "confidence": "observed"
+    },
+    "0x82": {
+     "name": "WD",
+     "source": "wait 5 WD \"Notepad\"",
+     "bytes": "31 1b 05 82 03 1e <str> (#6): kind 2 with bit7 (negate flag = t>>7); kind 0x82 is SHARED by WD and -WC (identical bytes); qmdec prints WD",
+     "confidence": "observed",
+     "evidence_2026_11_08": "help IDP_WAIT_FOR: `-WC or WD` = wait until window destroyed; byte 0x82 = kind 2 (WC, observed) with bit7 = '-' negation",
+     "evidence_sample27": "`wait 5 -WC \"Notepad\"` (sample27 stmt 20) = `31 1b 05 82 03 1e ..`, identical to WD in sample23 -> -WC == WD (kind 2 + negate bit 7), CONFIRMED"
+    },
+    "0x03": {
+     "name": "WP",
+     "source": "wait 5 WP \"Notepad\"",
+     "bytes": "31 1b 05 03 03 1e <str> (#7); by command order",
+     "confidence": "inferred"
+    },
+    "0x12": {
+     "name": "V",
+     "source": "wait 5 V v",
+     "bytes": "31 1b 05 12 03 1f 01 00 (#9): handler 0x42700f @0x427596 kind 0x12: call 0x40ae1d (1 S = variable address) then 0x4260d8",
+     "confidence": "observed"
+    },
+    "0x08": {
+     "name": "K",
+     "source": "wait 5 K F12",
+     "bytes": "31 1b 05 08 03 1e <str F12> (#10)",
+     "confidence": "observed",
+     "evidence_sample27": "order swapped vs sample23, same kind byte: wait 5 K F12 (sample27 stmt 18, AFTER `wait 5 M`; sample23 had K before M)"
+    },
+    "0x0d": {
+     "name": "M",
+     "source": "wait 5 M",
+     "bytes": "31 1b 05 0d 02 (#11): no S",
+     "confidence": "observed",
+     "evidence_sample27": "order swapped vs sample23, same kind byte: wait 5 M (sample27 stmt 17, BEFORE K)"
+    },
+    "0x0e": {
+     "name": "P",
+     "source": "wait 5 P 20",
+     "bytes": "31 1b 05 0e 03 1b 14 (#12): handler kind 0xe: S via 0x40adcc when c>2",
+     "confidence": "observed"
+    },
+    "0x0a": {
+     "name": "ML",
+     "source": "wait 5 ML",
+     "bytes": "31 1b 05 0a 02 (#13): no S",
+     "confidence": "observed",
+     "evidence_2026_11_08": "help IDP_WAIT_FOR 'Wait for mouse' lists ML; sample23 #13 `31 1b 05 0a 02` has no S operand (c=2), matching an operand-less mouse event; the other mouse events are not in the samples",
+     "evidence_sample27": "ML stays 0x0a in sample27 (`31 1b 05 0a 02`); M/ML were NOT swapped relative to each other (M before ML in both samples) -> handler 0x42700f kinds 0xa/0xb/0xc map to codes 1/2/4 (VK_LBUTTON/RBUTTON/MBUTTON pattern) so ML = 0x0a is the left button; 0x0d is the odd one (M)"
+    },
+    "0x0f": {
+     "name": "H",
+     "source": "wait 5 H h",
+     "bytes": "31 1b 05 0f 03 09 1f 00 00 (#14): handler kind 0xf: S via 0x40adcc",
+     "confidence": "observed"
+    },
+    "0x81": {
+     "name": "-WA",
+     "source": "wait 5 -WA \"Notepad\"",
+     "bytes": "31 1b 05 81 03 1e <str> (#15): kind 1 with bit7 negation",
+     "confidence": "observed",
+     "evidence_2026_11_08": "help IDP_WAIT_FOR: `-WA or WN`; byte 0x81 = kind 1 (WA, observed) with bit7 = '-' negation (flag-byte evidence)"
+    }
+   },
+   "note": "mapping by source order (sample23 statements #4-#15); WV=4/WE=5 not in sample23; the `KF` form failed to compile 2026-11-08: WD/-WA/ML upgraded to observed (help + bit7 negation / operand-count evidence); K (0x08), M (0x0d), WP (0x03) stay inferred; P (0x0e) and H (0x0f) were already handler-observed."
+  }
+ },
+ "T1:0x34": {
+  "name": "st_str",
+  "operands": "op S(dst str var) S(src)",
+  "qm_construct": "string assignment `str x=\"...\"` and str-to-str copy",
+  "evidence": "handler 0x424f2a: dispatch dst, check ptr>=0x10000, call 0x424906(ctx,dst,0) which dispatches src and copies per type tag (3/4 = string pointer); 9-byte form `34 1f idx 1e u32` in every sample",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x424f2a",
+  "layout_tokens": [
+   1,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Acc.GetChildObjects": 1,
+   "sample02:Acc.State": 1,
+   "sample02:Macro1": 2,
+   "sample03:Acc.State": 1,
+   "sample03:Macro1": 2,
+   "sample04:Macro1": 2,
+   "sample05:Macro1": 1,
+   "sample06:Macro1": 5,
+   "sample07:Macro1": 3
+  },
+  "macro1_occurrences": 15,
+  "stdlib_occurrences": 3
+ },
+ "T1:0x37": {
+  "name": "fmt_into",
+  "operands": "op S(dest addr) b  <table-2 handler 0x50+b with its own operands>",
+  "qm_construct": "F-string / formatted string produced into a hidden str temp: `F\"text {v}\"` (b=5). The temp is then read with 0a (char*) by the consumer (out, ...)",
+  "evidence": "handler 0x423694: dispatch S (dest) -> ctx+0x14; read b; `call [0x4725d0 + 4*b](ctx,&tmp)` (0x4725d0 = table2 + 0x50*4); sample01 #4/#6/#7, sample05 #5, sample06 #14, sample07 #9, sample02 #9 all `37 1f idx 05 04 ..`",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x423694",
+  "layout_tokens": [
+   1,
+   "S",
+   "X_T2P50"
+  ],
+  "samples_seen": {
+   "sample01:Macro1": 3,
+   "sample02:Acc.GetChildObjects": 2,
+   "sample02:Acc.State": 4,
+   "sample02:Macro1": 1,
+   "sample03:Acc.State": 4,
+   "sample05:Macro1": 1,
+   "sample06:Macro1": 1,
+   "sample07:Macro1": 1
+  },
+  "macro1_occurrences": 7,
+  "stdlib_occurrences": 10
+ },
+ "T1:0x38": {
+  "name": "op38",
+  "operands": "38 a b S [b x S]",
+  "qm_construct": "unknown; stdlib only",
+  "evidence": "tiling only",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x414e67",
+  "layout_tokens": [
+   3,
+   "S",
+   "X_E38"
+  ],
+  "samples_seen": {
+   "sample02:Acc.State": 1,
+   "sample03:Acc.State": 1
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 2
+ },
+ "T1:0x3a": {
+  "name": "arr_op",
+  "operands": "op a b S(array) [tail by a]",
+  "qm_construct": "ARRAY method: a=10,b=0 = `all.len` (array length). Other a not mapped.",
+  "evidence": "sample02 #9/#10: `3a 0a 00 1f 04 00` appears for `{all.len}` and as limit of `for i 0 all.len`; handler selects on a; only a=10 correlated with source",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4165ee",
+  "layout_tokens": [
+   3,
+   "S",
+   "OP3A"
+  ],
+  "samples_seen": {
+   "sample02:Macro1": 2
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0,
+  "note_validation": "downgraded 2026-11-07 by independent validator: id->name / handler case / sample-only evidence",
+  "evidence_groupL": "sample30: `ai.create(3)` = `3a 01 01 1f 0f 00 03 1b 03` (selector 03 = int), `al.create(2)` for ARRAY(long) = `3a 01 01 1f 10 00 14 1b 02` (selector 0x14 = long); element tail u16 0x0006 = long in `al[1]=5000000000`"
+ },
+ "T1:0x3b": {
+  "name": "arr_elem",
+  "operands": "op S(array) n [n x S index] tail(2 bytes = type u16)",
+  "qm_construct": "array element address `all[i]` (n=1 index), tail `24 00` = element type id 0x24 (Acc)",
+  "evidence": "sample02 #11 `52 (3b L4 01 (09 L6) 24 00) 00 fe 00` = all[i].State; type 0x24 equals Acc descriptor type and `3d` u16 in stdlib",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x416c52",
+  "layout_tokens": [
+   1,
+   "S",
+   "X_3B"
+  ],
+  "samples_seen": {
+   "sample02:<00257>Callback": 1,
+   "sample02:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 1,
+  "note_validation": "downgraded 2026-11-07 by independent validator: id->name / handler case / sample-only evidence"
+ },
+ "T1:0x3d": {
+  "name": "acc_assign",
+  "operands": "op S S u16(type id)",
+  "qm_construct": "`Acc a=acc(...)` (Acc local declaration/assignment, trailing u16 = type 0x24)",
+  "evidence": "tiling 21/21; u16=0x0024 = Acc type id; no source || sample35 #12 source `Acc a=acc(\"OK\" \"PUSHBUTTON\" w)`",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x411f60",
+  "layout_tokens": [
+   1,
+   "S",
+   "S",
+   2
+  ],
+  "samples_seen": {
+   "sample02:<00257>Callback": 1,
+   "sample02:Acc.Find": 2,
+   "sample02:Acc.FromWindow": 1,
+   "sample03:Acc.Find": 2,
+   "sample07:Acc.Find": 2,
+   "sample35_funcs_misc:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 8
+ },
+ "T1:0x3e": {
+  "name": "com_assign / object variable init",
+  "operands": "op S S",
+  "qm_construct": "`IXmlNode n=x.RootElement` (descriptor type 0x9c) and `IXml x=CreateXml`, `ICsv c=CreateCsv`, `IStringMap m=CreateStringMap(1)`",
+  "evidence": "sample33 #3,#5,#9,#16 `3e 1f L 47|49 ...`; declaration type from the local descriptor (0x9d IXml, 0x9c IXmlNode, 0x9a ICsv, 0x99 IStringMap, flag byte 0x40); builtins CreateXml 650, CreateCsv 649, CreateStringMap 648 are res9 entries with an empty dll name || sample35 #14 `IDispatch h=htm(...)`: local type 0x09 IDispatch (flag 0x40)",
+  "confidence": "observed",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x4156a8",
+  "layout_tokens": [
+   1,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Acc.Find": 1,
+   "sample02:Acc.FromWindow": 1,
+   "sample03:Acc.Find": 1,
+   "sample07:Acc.Find": 1,
+   "sample35_funcs_misc:Macro1": 1
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 4,
+  "groupM": true
+ },
+ "T1:0x3f": {
+  "name": "typed assign into VARIANT/BSTR local",
+  "operands": "3f type S(dest local) S(value) [u16 source type if type==0x13]",
+  "qm_construct": "`VARIANT v=5` / `v=7` (type 0x13, trailing word = source type 3 = int), `BSTR b=\"bstr\"` (type 0x0f), stdlib `3f 0d L 1b 00` (type 0x0d)",
+  "evidence": "handler 0x415673: reads type byte, dispatches S (dest) then calls 0x4140d7(type) which dispatches the value S (path 0x4142c8 -> helper 0x424906 for type 0x0f) and, for 0x13, reads a u16 at ip-2 (compared with 0xd/9); sample33 #32 `3f 13 1f 0f 00 1b 05 03 00`, #33 (`v=7`), #34 `3f 0f 1f 10 00 1e 50 00 00 00`. Layout: type 0x0f = S then S (new, layout OP3F in qmlayout.py)",
+  "confidence": "observed",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x415673",
+  "layout_tokens": [
+   2,
+   "S",
+   "OP3F"
+  ],
+  "samples_seen": {
+   "sample33:Macro1": 3
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 3,
+  "groupM": true
+ },
+ "T1:0x43": {
+  "name": "query_interface",
+  "operands": "op u16 S",
+  "qm_construct": "QueryInterface (stdlib)",
+  "evidence": "docs REA note; no source",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x41571d",
+  "layout_tokens": [
+   3,
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Acc.Find": 1,
+   "sample03:Acc.Find": 1,
+   "sample07:Acc.Find": 1
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 3
+ },
+ "T1:0x47": {
+  "name": "com_method_call",
+  "operands": "47 a b 20 argc S(object) u16(method id = vtable offset) u16(class = per-exe interface index) args(last-coded first)",
+  "qm_construct": "interface method/property call on IXml/IXmlNode/ICsv/IStringMap objects",
+  "evidence": "sample33 (class is a per-exe index: IXml 0, IXmlNode 1, ICsv 2, IStringMap 3; sample17: IXml 0, IStringMap 1, ICsv 2) -> qmdec keys methods by the DESCRIPTOR TYPE of the object (0x9d IXml, 0x9c IXmlNode, 0x9a ICsv, 0x99 IStringMap) + id: IXml 0x34 FromString (#4), 0x38 ToString (#6), 0x18 RootElement (#5); IXmlNode 0x80 ChildCount (#8); ICsv 0x14 FromString (#10), 0x18 ToString (#15), 0x38 RowCount (#11), 0x3c ColumnCount (#12), 0x44 Cell get 2 args (#13), 0x48 Cell set 3 args (#14, value coded first); IStringMap 0x14 Add (#17), 0x1c Get (#18). Same ids in sample17 for the shared members",
+  "confidence": "observed",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x415e44",
+  "layout_tokens": [
+   6,
+   "X_47"
+  ],
+  "samples_seen": {
+   "sample33:Macro1": 11
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 3,
+  "groupM": true
+ },
+ "T1:0x49": {
+  "name": "call_id",
+  "operands": "49 ret tb1 tb2 argc id16 + argc x S",
+  "qm_construct": "call of a QM built-in function by numeric id: `ProcessNameToId(name)` = id 523 (0x020b), argc=3 (two defaulted args 0,0 then the name); the id table is inside QM (qm.exe), NOT in res2/res3, so id->name is only known by source correlation",
+  "evidence": "sample05 #1 `49 00 00 20 03 0b 02 1b00 1b00 (0a L0)` = ProcessNameToId(testExeName); other ids (6, 378, 380) only in stdlib; handler 0x429650; arg order vs source order (name is LAST of three) unexplained",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x429650",
+  "layout_tokens": [
+   7,
+   "X_ARGC4"
+  ],
+  "samples_seen": {
+   "sample02:Acc.FromWindow": 2,
+   "sample02:Acc.State": 1,
+   "sample03:Acc.State": 1,
+   "sample05:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 4,
+  "note_validation": "downgraded 2026-11-07 by independent validator: id->name / handler case / sample-only evidence",
+  "id_table": "analysis/builtin_function_ids.json (523 = ProcessNameToId observed in 2.4.12; id space differs 2.4.2 vs 2.4.12)"
+ },
+ "T1:0x4b": {
+  "name": "str_tmp",
+  "operands": "op u16(local) S",
+  "qm_construct": "wraps a string-returning call so that its value lives in temp local #u16: `{a.Value}` inside F\"...\" (4b 06 00 (52 L4 00 fb 00))",
+  "evidence": "sample07 #9; stdlib Acc.Value `d0 01 (4b 00 00 (47 ..))` returns str; handler 0x42a14e, sig `ADV3 RD2@1 SUB`; temp local 6 is the slot after the F-temp (L5) = consistent",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42a14e",
+  "layout_tokens": [
+   3,
+   "S"
+  ],
+  "samples_seen": {
+   "sample07:Acc.Value": 1,
+   "sample07:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 1
+ },
+ "T1:0x52": {
+  "name": "call_method",
+  "operands": "op S(object addr) n id16 + n args",
+  "qm_construct": "method/function call on an object: `root.FromWindow(w)`, `root.GetChildObjects(..)`, `cb.Find(..)`, `x.State`, `a.Value`. id16 = res2 record `id` -> res3 name (236 Acc.Find, 240 Acc.FromWindow, 251 Acc.Value, 254 Acc.State, 257 Acc.GetChildObjects). n = number of explicit args incl. ARG-wrapped",
+  "evidence": "sample02 #7 `52 L3 01 f0 00 (09 L2)`; #8 `03 01 01`; sample03 #6 `05 ec 00`; res2 ids verified against function names for all 5 calls",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42a610",
+  "layout_tokens": [
+   1,
+   "S",
+   3,
+   "ARGN"
+  ],
+  "samples_seen": {
+   "sample02:Acc.GetChildObjects": 1,
+   "sample02:Macro1": 3,
+   "sample03:Macro1": 2,
+   "sample07:Macro1": 2
+  },
+  "macro1_occurrences": 7,
+  "stdlib_occurrences": 1
+ },
+ "T1:0x54": {
+  "name": "func_addr",
+  "operands": "54 id16",
+  "qm_construct": "address of a sub-function `&sub.Foo` (res2 function id)",
+  "evidence": "handler 0x4126b0: u16 id -> table 0x473b90 lookup (0x402658) -> ctx[0] = function pointer. OBSERVED sample34 `call(&sub.Foo 5)` = `8e 01 54 a3 05 1b 05` (0x05a3 = 1443 = res2 id of <00001>Foo); older use: sample02 stdlib `54 9d 05`.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4126b0",
+  "layout_tokens": [
+   3
+  ],
+  "samples_seen": {
+   "sample34_scopes_variants:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x83": {
+  "name": "acc",
+  "operands": "83 tb S S S... (tb=3: name role window)",
+  "qm_construct": "`Acc a=acc(\"OK\" \"PUSHBUTTON\" w)`",
+  "evidence": "tiling only; 2.4.12 handler 0x419f7f differs in shape from the 2.4.2 notes used for X_83 || sample35 #12 `3d 1f 05 00 83 03 OK PUSHBUTTON w 24 00` = source `Acc a=acc(\"OK\" \"PUSHBUTTON\" w)`: 0x83 = acc (observed for tb=3)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x419f7f",
+  "layout_tokens": [
+   2,
+   "X_83"
+  ],
+  "samples_seen": {
+   "sample02:Acc.Find": 2,
+   "sample02:Acc.FromWindow": 1,
+   "sample03:Acc.Find": 2,
+   "sample07:Acc.Find": 2,
+   "sample35_funcs_misc:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 7
+ },
+ "T1:0x88": {
+  "name": "case",
+  "operands": "88 u16(= code offset of the sel's u16 operand = d9 pos+1) selid(byte) count(byte) data; data = count x u32 (int sel: values; string sel: string-pool offsets); count 0 = `case else`, followed by 4 padding bytes in an int sel but by NO bytes in a string sel",
+  "qm_construct": "`case 1`, `case [2,5]` (count 2), `case \"a\"`, `case [\"a\",\"b\"]`, `case else`; the statements of a case follow as ordinary stream entries until the next 0x88",
+  "evidence": "handler 0x420790 reads byte[3] (selid), byte[4] (count) and u32 values at +5 (int: compare with sel value, count 1 = single compare, else loop; string: strcmp variants 0x42eaf0/0x42f708/0x445ee2 by flag bits 1/2/4, values are `[ctx+0x38]+0x14` pool offsets); count 0 = else; handler 0x4209c0 (the 0x88 statement itself) jumps via the code-offset cell. Source sample32 #31 `case 1` (88 07 01 00 01 01 00 00 00), #33 `case [2,5]` (count 2: 02 00 00 00 05 00 00 00), #35 `case 7`, #37 `case else` (int: 4 pad bytes), #40/#42 `case \"a\"`/`\"b\"`, #44 `case else` (string: 5 bytes only), #47 `case \"A*\"`. Tiling: SELCASE token (qmlayout.py GROUP M) types the else by looking up the preceding d9 with the same selid",
+  "confidence": "observed",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x4209c0",
+  "layout_tokens": [
+   5,
+   [
+    "SKIPN",
+    4,
+    4,
+    1
+   ]
+  ],
+  "samples_seen": {
+   "sample32:Macro1": 9
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 6,
+  "handler": "0x4209c0 / 0x420790",
+  "tokens": [
+   5,
+   [
+    "SELCASE",
+    4
+   ]
+  ],
+  "groupM": true
+ },
+ "T1:0x89": {
+  "name": "continue",
+  "operands": "op",
+  "qm_construct": "`continue` (sample04 `if(!dlg) continue`)",
+  "evidence": "handler 0x420780: counter=0x7530, status byte [ctx+0x1a]=4 (continue); sample04 #5",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x420780",
+  "layout_tokens": [
+   1
+  ],
+  "samples_seen": {
+   "sample04:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x98": {
+  "name": "jump",
+  "operands": "op u16",
+  "qm_construct": "unconditional skip emitted at the end of the THEN part of if/else (`else`): execution continues after stream index u16",
+  "evidence": "handler 0x4206f0: ip+=3; [ctx+0x1c]=u16 (loop counter); sample03 #12, sample05 #4, sample06 #5, sample07 #6/#10",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4206f0",
+  "layout_tokens": [
+   3
+  ],
+  "samples_seen": {
+   "sample02:Acc.FromWindow": 1,
+   "sample02:Acc.State": 2,
+   "sample03:Acc.State": 2,
+   "sample03:Macro1": 1,
+   "sample05:Macro1": 1,
+   "sample06:Macro1": 1,
+   "sample07:Macro1": 2
+  },
+  "macro1_occurrences": 5,
+  "stdlib_occurrences": 5
+ },
+ "T1:0x99": {
+  "name": "err_block",
+  "operands": "99 u16(last skipped stmt idx) mode",
+  "qm_construct": "`err` (mode 0), `err+` (mode 1), `err-` (mode 2). Handler is a plain counter jump (skips the handler block in normal flow); the indented block after `err`/`err+` is the handler body up to stream idx u16; `err-` has no block (u16 = own index)",
+  "evidence": "sample22 #10 `99 0b 00 00` (err, skips #11 out \"e1\"), #13 `99 0e 00 01` (err+, skips #14), #15 `99 0f 00 02` (err-, u16 = own idx); handler 0x420760 counter=u16 without advancing ip; stdlib uses modes 0/1",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x420760",
+  "layout_tokens": [
+   4
+  ],
+  "samples_seen": {
+   "sample22_flow_misc:Macro1": 3
+  },
+  "macro1_occurrences": 3,
+  "stdlib_occurrences": 11,
+  "open": "how a runtime error selects the block lives in the error dispatcher, not derived"
+ },
+ "T1:0x9a": {
+  "name": "end",
+  "operands": "9a flags [S(2nd arg) if flags&2] [S(message)]",
+  "qm_construct": "`end \"text\"` = `9a 00 1e<str>`; `end \"warn\" 8` = `9a 02 1b 08 1e<str>` (2nd arg S emitted BEFORE message); `end F\"n={n}\" 1` = `9a 02 1b 01 0a 37..`. Bare `end` is opcode 0x00",
+  "evidence": "sample22 #4,#6,#8 vs qml lines; existing layout tiles; handler 0x421960. Stdlib flag 4 form (`9a 04 <S>`) has no source || 2026-11-08: help IDP_END `end [errorstring] [flags] [errorcode]`: the second argument is FLAGS (1 here = error in this function, 4 = do not open macro, 8 = warning not error, 16 = append last dll error, 32 = temporary warning); selector bit 2 (0x02) = flags operand present (sample22 `end \"warn\" 8`, `end F\"..\" 1`).",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x421960",
+  "layout_tokens": [
+   2,
+   [
+    "IF",
+    1,
+    2,
+    [
+     "S"
+    ]
+   ],
+   [
+    "IF",
+    1,
+    1,
+    [
+     "?"
+    ],
+    [
+     "S"
+    ]
+   ]
+  ],
+  "samples_seen": {
+   "sample22_flow_misc:Macro1": 3
+  },
+  "macro1_occurrences": 3,
+  "stdlib_occurrences": 16,
+  "open": "stdlib `9a 04 <S>` form (selector 4) has no source; the errorcode (3rd arg) form is not seen"
+ },
+ "T1:0x9c": {
+  "name": "for",
+  "operands": "op u16(last body stmt idx) 00 S(var) S(from) S(to)",
+  "qm_construct": "`for i 0 all.len` (loop variable, start, exclusive limit); body = following statements up to stream index u16",
+  "evidence": "sample02 #10 `9c 0d 00 00 L6 1b00 (3a 0a 00 L4)`; u16=13 = last body statement #13; handler 0x420f20 (layout sig `ADV3 RD2@1 ADV1 SUB SUB SUB`)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x420f20",
+  "layout_tokens": [
+   4,
+   "S",
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x9f": {
+  "name": "find",
+  "operands": "op n S S [S..]",
+  "qm_construct": "`find(str pattern)` function: n = argument count (2); returns index or -1",
+  "evidence": "sample06 #3/#10/#12 `9f 02 (0a L2) (0a L1)` then `0f 1b 00` (>=0); handler 0x425208 chooses helper 0x42f33c/0x42f36e/0x42b359/0x42b379 (case/regex variants not mapped); sample27 stmts 36-38: `find(s \"o\" 2)` = `9f 03 S S S`, `find(s \"O\" 0 1)` = `9f 04 S S S S` (from, flags), also as `int x=find(...)`: n = argument count, args in written order",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x425208",
+  "layout_tokens": [
+   2,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample06:Macro1": 3
+  },
+  "macro1_occurrences": 3,
+  "stdlib_occurrences": 0,
+  "groupL": true
+ },
+ "T1:0xad": {
+  "name": "if",
+  "operands": "op u16(skip_to) S(cond)",
+  "qm_construct": "`if(cond)` (statement form `if(c) stmt` as well): when cond==0 the statement counter is set to u16 = stream index of the last statement belonging to the then-part (including a trailing `98` jump when an else exists)",
+  "evidence": "handler 0x420710: ip+=3; dispatch S; if acc.lo|hi==0 then [ctx+0x1c]=u16; all if statements in samples 02-07 (e.g. sample03 #7 -> 12, #10 -> 11)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x420710",
+  "layout_tokens": [
+   3,
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Acc.Find": 2,
+   "sample02:Acc.FromWindow": 3,
+   "sample02:Acc.GetChildObjects": 2,
+   "sample02:Acc.State": 5,
+   "sample02:Macro1": 2,
+   "sample03:Acc.Find": 2,
+   "sample03:Acc.State": 5,
+   "sample03:Macro1": 3,
+   "sample04:Macro1": 1,
+   "sample05:Macro1": 1,
+   "sample06:Macro1": 3,
+   "sample07:Acc.Find": 2,
+   "sample07:Acc.Value": 1,
+   "sample07:Macro1": 2
+  },
+  "macro1_occurrences": 12,
+  "stdlib_occurrences": 22
+ },
+ "T1:0xc9": {
+  "name": "out",
+  "operands": "op flag [cnt] ( S | S S* 00 )",
+  "qm_construct": "`out` statement. flag bit1 (0x02) = format form `out \"fmt %i\" a b`: cnt byte (=4*number of 4-byte args) + S(fmt) + S(arg)* + 00; else a single S (a string literal pointer 1e, or a char* from 0a for F-strings). flag bit0 = alternative output sink (0x42007a), bit7 = no operand; only flags 0 and 2 occur",
+  "evidence": "handler 0x4200d7: ip+=1; flag=code[ip++]; flag<0 -> 0x402856; bit1 -> 0x42422f (format+args) else 0x424906 (single value to string); bit0 -> 0x42007a else default sink; samples: `c9 00 1e ..`, `c9 00 0a 37 ..`, `c9 02 04 ..` (sample03 #9), `c9 02 08 ..` (sample02 #13)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4200d7",
+  "layout_tokens": [
+   2,
+   "X_C9"
+  ],
+  "samples_seen": {
+   "sample01:Macro1": 4,
+   "sample02:Macro1": 4,
+   "sample03:Macro1": 4,
+   "sample04:Macro1": 1,
+   "sample05:Macro1": 2,
+   "sample06:Macro1": 3,
+   "sample07:Macro1": 3
+  },
+  "macro1_occurrences": 21,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xd0": {
+  "name": "ret",
+  "operands": "op flag [S]",
+  "qm_construct": "`ret` (flag 0); flag 1 + S = return a value (stdlib)",
+  "evidence": "sample02/03 #5 `d0 00`; stdlib `d0 01 (..)`; handler 0x429f13, sig `ADV1 RD1@1 ADV1 SUB`",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x429f13",
+  "layout_tokens": [
+   2,
+   [
+    "IFEQ",
+    1,
+    1,
+    [
+     "S"
+    ]
+   ],
+   [
+    "IFEQ",
+    1,
+    2,
+    [
+     "S"
+    ]
+   ],
+   [
+    "IFEQ",
+    1,
+    4,
+    [
+     "S",
+     1
+    ]
+   ]
+  ],
+  "samples_seen": {
+   "sample02:<00257>Callback": 1,
+   "sample02:Acc.Find": 1,
+   "sample02:Acc.State": 1,
+   "sample02:Macro1": 1,
+   "sample03:Acc.Find": 1,
+   "sample03:Acc.State": 1,
+   "sample03:Macro1": 1,
+   "sample07:Acc.Find": 1,
+   "sample07:Acc.Value": 1
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 7
+ },
+ "T1:0xd1": {
+  "name": "rep",
+  "operands": "op u16(last body stmt idx) flag [S(count) if flag!=0]",
+  "qm_construct": "`rep` infinite loop (flag 0); with a count expression (flag!=0, `rep N`) the S is the repeat count (stdlib/original-1 only)",
+  "evidence": "handler 0x4212f0: ip+=3, counter-level++, flag 0 -> loops 0x420d90(level,u16+1) until it returns nonzero; sample01 `d1 08 00 00` (last body stmt = 8), sample04 `d1 07 00 00`",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4212f0",
+  "layout_tokens": [
+   4,
+   [
+    "IF",
+    3,
+    255,
+    [
+     "S"
+    ]
+   ]
+  ],
+  "samples_seen": {
+   "sample01:Macro1": 1,
+   "sample02:Acc.State": 1,
+   "sample03:Acc.State": 1,
+   "sample04:Macro1": 1
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 2
+ },
+ "T1:0xd9": {
+  "name": "sel",
+  "operands": "d9 u16(stream index of the last statement of the sel block) selid(byte) kind(byte) S(value) [S(flags) if kind==2]",
+  "qm_construct": "`sel x` (kind 0 = integer value), `sel s` (kind 1 = string value), `sel s 3` (kind 2 = string value + flags expression S; flags 1 icase, 2 wildcards, 4 regex $, 8 null=\"\" per help IDP_SEL)",
+  "evidence": "handler 0x420790 (2.4.12): ip+=3, ebp=u16 end index, edx=selid byte, edi=kind byte, calls 0x40adcc (S); kind 2 calls 0x40adcc again for the flags; scans following stream entries for 0x88 with byte[3]==selid. Source sample32 #30 `sel n` (d9 26 00 00 00 S), #39 `sel s` (d9 2d 00 00 01 S), #46 `sel s 3` (d9 32 00 00 02 S 1b 03). Layout now [5,S,IFEQ(4,2,[S])] (layout_overrides_groupM.json)",
+  "confidence": "observed",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x420790",
+  "layout_tokens": [
+   5,
+   "S"
+  ],
+  "samples_seen": {
+   "sample32:Macro1": 3
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 3,
+  "handler": "0x420790",
+  "tokens": [
+   5,
+   "S",
+   [
+    "IFEQ",
+    4,
+    2,
+    [
+     "S"
+    ]
+   ]
+  ],
+  "groupM": true
+ },
+ "T1:0xe1": {
+  "name": "this",
+  "operands": "op type",
+  "qm_construct": "implicit `this` pointer of a member function: `e1 24` = Acc object (type id 0x24) in stdlib",
+  "evidence": "layout 2 bytes; `13 e1 24 23 40` = this.a",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x412880",
+  "layout_tokens": [
+   2
+  ],
+  "samples_seen": {
+   "sample02:Acc.Find": 3,
+   "sample02:Acc.FromWindow": 4,
+   "sample02:Acc.GetChildObjects": 2,
+   "sample02:Acc.State": 3,
+   "sample03:Acc.Find": 3,
+   "sample03:Acc.State": 3,
+   "sample07:Acc.Find": 3,
+   "sample07:Acc.Value": 3
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 24
+ },
+ "T1:0xe5": {
+  "name": "ope5",
+  "operands": "op u32",
+  "qm_construct": "unknown constant (stdlib `e5 1a000000`)",
+  "evidence": "tiling only",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x421df7",
+  "layout_tokens": [
+   5
+  ],
+  "samples_seen": {
+   "sample02:Acc.FromWindow": 1
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 1
+ },
+ "T1:0xe7": {
+  "name": "win",
+  "operands": "op v S(k args)",
+  "qm_construct": "`win(title class)` -> window handle. v&0x1f = number of window-spec args (2 here), bit7 = hwnd form, k==0 -> foreground window",
+  "evidence": "handler 0x428895 (0x40ae81 evaluates min(k,4) arg strings into a window-spec, calls 0x4287a4 enum with callback 0x428791); sample02/03/04/07 `e7 02 (0a L0)(0a L1)`; k>=6/bit5 variants not exercised",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x428895",
+  "layout_tokens": [
+   2,
+   "X_E7"
+  ],
+  "samples_seen": {
+   "sample02:Macro1": 1,
+   "sample03:Macro1": 1,
+   "sample04:Macro1": 1,
+   "sample07:Macro1": 1
+  },
+  "macro1_occurrences": 4,
+  "stdlib_occurrences": 0
+ },
+ "T2:0x00": {
+  "name": "== (equal)",
+  "operands": "op S(rhs)",
+  "qm_construct": "comparison `=` (QM uses `=` for equality): `pid=0`",
+  "evidence": "handler 0x4100f0 (save LHS, dispatch RHS, cmp, result 1 if equal); sample05 #2",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4100f0",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample05:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T2:0x01": {
+  "name": "+ (add)",
+  "operands": "op S(rhs)",
+  "qm_construct": "`+` 32-bit add: `loopCount+1`, `nMatch+1`",
+  "evidence": "handler 0x40fb50 (add, cdq); sample01 #3, sample06 #11/#13",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40fb50",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample01:Macro1": 1,
+   "sample06:Macro1": 2
+  },
+  "macro1_occurrences": 3,
+  "stdlib_occurrences": 0
+ },
+ "T2:0x06": {
+  "name": "& (bit and)",
+  "operands": "op S(rhs)",
+  "qm_construct": "`&` bitwise AND: `st&0x100000`, `st&0x10`",
+  "evidence": "handler 0x40ff60 (and ecx,edi; hi=0); sample02 #12, sample03 #10",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40ff60",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Acc.Find": 1,
+   "sample02:Acc.GetChildObjects": 1,
+   "sample02:Acc.State": 1,
+   "sample02:Macro1": 2,
+   "sample03:Acc.Find": 1,
+   "sample03:Acc.State": 1,
+   "sample03:Macro1": 1,
+   "sample07:Acc.Find": 1
+  },
+  "macro1_occurrences": 3,
+  "stdlib_occurrences": 6
+ },
+ "T2:0x07": {
+  "name": "| (bit or)",
+  "operands": "op S(rhs)",
+  "qm_construct": "bitwise OR (stdlib `flags | 0x41`)",
+  "evidence": "name from docs handler table; stdlib only",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x40ff90",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Acc.Find": 2,
+   "sample03:Acc.Find": 2,
+   "sample07:Acc.Find": 2
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 6
+ },
+ "T2:0x0a": {
+  "name": ">> ",
+  "operands": "op S(rhs)",
+  "qm_construct": "shift right (stdlib `x >> 16`)",
+  "evidence": "docs handler table; stdlib only",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x40fc70",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Acc.GetChildObjects": 1
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 1
+ },
+ "T2:0x0b": {
+  "name": "<<",
+  "operands": "op S(rhs)",
+  "qm_construct": "shift left (stdlib `st<<1`)",
+  "evidence": "docs handler table; stdlib only",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x40fca0",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Acc.State": 1,
+   "sample03:Acc.State": 1
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 2
+ },
+ "T2:0x0c": {
+  "name": "and (short-circuit)",
+  "operands": "op S(rhs)",
+  "qm_construct": "`and` / `&&`: if LHS==0 sets IP=0xffff (skip RHS)",
+  "evidence": "handler 0x410130 (acc==0 -> [ctx+0x10]=0xffff, no RHS); sample02 #12 joins two `st&mask` blocks",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x410130",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T2:0x0e": {
+  "name": "> (greater)",
+  "operands": "op S(rhs)",
+  "qm_construct": "`>` (LHS > RHS)",
+  "evidence": "handler 0x40fcd0 (`jle skip`); not in samples",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x40fcd0",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {},
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 0
+ },
+ "T2:0x0f": {
+  "name": ">=",
+  "operands": "op S(rhs)",
+  "qm_construct": "`>=` comparison (LHS >= RHS)",
+  "evidence": "handler 0x40fd10: edi=LHS, [esi]=RHS, `cmp edi,[esi]; jl skip` -> 1 if LHS>=RHS; sample06 `find(..)>=0` compiles to T2 0x0f",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40fd10",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample06:Macro1": 3
+  },
+  "macro1_occurrences": 3,
+  "stdlib_occurrences": 0
+ },
+ "T2:0x10": {
+  "name": "< (less)",
+  "operands": "op S(rhs)",
+  "qm_construct": "`<` (LHS < RHS)",
+  "evidence": "handler 0x40fd50 (`jge skip`); not in samples",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x40fd50",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {},
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 0
+ },
+ "T2:0x11": {
+  "name": "<= ",
+  "operands": "op S(rhs)",
+  "qm_construct": "`<=` (LHS <= RHS)",
+  "evidence": "handler 0x40fd90 (`jg skip`); not in samples",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x40fd90",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {},
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 0
+ },
+ "T2:0x12": {
+  "name": "!=",
+  "operands": "op S(rhs)",
+  "qm_construct": "`<>` / `!=`",
+  "evidence": "handler 0x40fdd0 (shared with 0x25); stdlib uses 0x12 and 0x25",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x40fdd0",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Acc.GetChildObjects": 1
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 1
+ },
+ "T2:0x25": {
+  "name": "!= (alias)",
+  "operands": "op S(rhs)",
+  "qm_construct": "same handler as 0x12",
+  "evidence": "handler 0x40fdd0",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x40fdd0",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample02:Acc.Find": 1,
+   "sample03:Acc.Find": 1,
+   "sample07:Acc.Find": 1
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 3
+ },
+ "T2via37:0x55": {
+  "name": "sprintf (dest-form)",
+  "operands": "[b=05] cnt S(fmt) S(arg)* 00 ; cnt = byte size of the vararg block (4 per int/ptr arg)",
+  "qm_construct": "printf-style format into dest str: the compiler turns `F\"..{x}..\"` into a printf format (\"%i\", \"%s\") + arguments; `05 04` = selector byte 5 + argbytes 4 (one 4-byte arg)",
+  "evidence": "handler 0x42461c = `push 0; call 0x42422f` ; 0x42422f reads count byte, alloca(count) (0x450550), evaluates fmt S then arg S until a 0x00 byte; strings \"%i\" in pool; counts: 04 (1 arg) in 7 places, 08 (2 args) in stdlib `level=%i %i`",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42461c",
+  "layout_tokens": [
+   1,
+   "X_ARGLIST"
+  ],
+  "samples_seen": {
+   "sample01:Macro1": 3,
+   "sample02:Acc.GetChildObjects": 1,
+   "sample02:Macro1": 1,
+   "sample05:Macro1": 1,
+   "sample06:Macro1": 1,
+   "sample07:Macro1": 1
+  },
+  "macro1_occurrences": 7,
+  "stdlib_occurrences": 1
+ },
+ "T2via37:0x56": {
+  "name": "sprintf (flag=1 form)",
+  "operands": "same layout as 0x55",
+  "qm_construct": "unknown variant (handler 0x42462a = push 1; call 0x42422f); never seen in samples",
+  "evidence": "handler only",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x42462a",
+  "layout_tokens": [
+   1,
+   "X_ARGLIST"
+  ],
+  "samples_seen": {},
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 0
+ },
+ "T2via37:0x60": {
+  "name": "op60",
+  "operands": "op b n n x S",
+  "qm_construct": "unknown (stdlib Acc.State `37 LV0 (T2 .. 10 00 03 ..)` string concat?)",
+  "evidence": "tiling only",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x424d2a",
+  "layout_tokens": [
+   3,
+   "X_ARGC2"
+  ],
+  "samples_seen": {
+   "sample02:Acc.State": 1,
+   "sample03:Acc.State": 1
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 2
+ },
+ "T2via37:0x67": {
+  "name": "op67",
+  "operands": "op n n x S",
+  "qm_construct": "unknown (stdlib)",
+  "evidence": "tiling only",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x423c52",
+  "layout_tokens": [
+   1,
+   "X_CNTS"
+  ],
+  "samples_seen": {
+   "sample02:Acc.State": 1,
+   "sample03:Acc.State": 1
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 2
+ },
+ "T2via37:0x79": {
+  "name": "op79",
+  "operands": "op n min(n,3) x S",
+  "qm_construct": "unknown (stdlib)",
+  "evidence": "tiling only",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x424023",
+  "layout_tokens": [
+   2,
+   "X_N3"
+  ],
+  "samples_seen": {
+   "sample02:Acc.State": 2,
+   "sample03:Acc.State": 2
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 4
+ },
+ "T2via37:0x8c": {
+  "name": "op8c",
+  "operands": "op n n x S",
+  "qm_construct": "unknown (stdlib, `3c 01`)",
+  "evidence": "tiling only",
+  "confidence": "inferred",
+  "source_correlated": false,
+  "handler_va_2.4.12": "0x423a18",
+  "layout_tokens": [
+   1,
+   "X_CNTS"
+  ],
+  "samples_seen": {
+   "sample02:Acc.GetChildObjects": 1
+  },
+  "macro1_occurrences": 0,
+  "stdlib_occurrences": 1
+ },
+ "T1:0xbc": {
+  "name": "min",
+  "operands": "bc 6e S(win)",
+  "qm_construct": "`min w2` (sample14 stmt 5: bc 6e 09 1f 01 00)",
+  "evidence": "0x4283a8 (shared by 0xbc/0xbd/0xd3): ip++; b=code[ip]; ip++; dispatch S (window handle, 0x40ada4); if statement: SendMessage(hwnd,0x112 WM_SYSCOMMAND,wparam,..) with wparam 'n'(0x6e)=0xf020 SC_MINIMIZE, 's'(0x73)=0xf120 SC_RESTORE, else 0xf030 SC_MAXIMIZE; if used as value: 'n'->IsIconic, 's'->IsIconic||IsZoomed-style (0x4607c8/0x460608), else IsZoomed (IAT USER32); stream order act,max,min,res matches sample14.qml",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4283a8",
+  "layout_tokens": [
+   2,
+   "S"
+  ],
+  "samples_seen": {
+   "sample14:Macro1": 1
+  },
+  "groupG": true,
+  "evidence_groupL": "sample29 stmts 4-6: `a=min(w)` = `24 1f 01 00 bc 6e 09 1f 00 00`, `a=max(w)` = bd 78, `a=res(w)` = d3 73: the function forms have the same bytes as the statements"
+ },
+ "T1:0xbd": {
+  "name": "max",
+  "operands": "bd 78 S(win)",
+  "qm_construct": "`max w2` (sample14 stmt 4: bd 78 09 1f 01 00)",
+  "evidence": "0x4283a8 (shared by 0xbc/0xbd/0xd3): ip++; b=code[ip]; ip++; dispatch S (window handle, 0x40ada4); if statement: SendMessage(hwnd,0x112 WM_SYSCOMMAND,wparam,..) with wparam 'n'(0x6e)=0xf020 SC_MINIMIZE, 's'(0x73)=0xf120 SC_RESTORE, else 0xf030 SC_MAXIMIZE; if used as value: 'n'->IsIconic, 's'->IsIconic||IsZoomed-style (0x4607c8/0x460608), else IsZoomed (IAT USER32); byte 0x78='x'",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4283a8",
+  "layout_tokens": [
+   2,
+   "S"
+  ],
+  "samples_seen": {
+   "sample14:Macro1": 1
+  },
+  "groupG": true,
+  "evidence_groupL": "sample29 stmts 4-6: `a=min(w)` = `24 1f 01 00 bc 6e 09 1f 00 00`, `a=max(w)` = bd 78, `a=res(w)` = d3 73: the function forms have the same bytes as the statements"
+ },
+ "T1:0xd3": {
+  "name": "res",
+  "operands": "d3 73 S(win)",
+  "qm_construct": "`res w2` (sample14 stmt 6: d3 73 09 1f 01 00)",
+  "evidence": "0x4283a8 (shared by 0xbc/0xbd/0xd3): ip++; b=code[ip]; ip++; dispatch S (window handle, 0x40ada4); if statement: SendMessage(hwnd,0x112 WM_SYSCOMMAND,wparam,..) with wparam 'n'(0x6e)=0xf020 SC_MINIMIZE, 's'(0x73)=0xf120 SC_RESTORE, else 0xf030 SC_MAXIMIZE; if used as value: 'n'->IsIconic, 's'->IsIconic||IsZoomed-style (0x4607c8/0x460608), else IsZoomed (IAT USER32); byte 0x73='s'",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4283a8",
+  "layout_tokens": [
+   2,
+   "S"
+  ],
+  "samples_seen": {
+   "sample14:Macro1": 1
+  },
+  "groupG": true,
+  "evidence_groupL": "sample29 stmts 4-6: `a=min(w)` = `24 1f 01 00 bc 6e 09 1f 00 00`, `a=max(w)` = bd 78, `a=res(w)` = d3 73: the function forms have the same bytes as the statements"
+ },
+ "T1:0xc0": {
+  "name": "mou",
+  "operands": "c0 mode n S* (mode 0 `mou`, 0x2b `mou+`, 0x2d `mou-`; n = 0, 2 (x y) or 3 (x y win))",
+  "qm_construct": "`mou 5 6`, `mou 5 6 w`, `mou+ 1 2`, `mou- 3 4`, bare `mou`",
+  "evidence": "handler 0x41e9d1 (ip++, mode byte, '*' (0x2a) = other path) -> 0x40bb4c: byte==0 ? no operands : 0x40b50d (n byte, then 0x40b175 loops 2x 0x40adcc = x,y); final 0x40b335(0x8001,...) = MOUSEEVENTF_MOVE|ABSOLUTE (0x8001 is the flag constant pushed at 0x40bbea). Operand values 100/200 observed in bytecode; sample27 stmts 26-30: `c0 00 02 1b 05 1b 06`, `c0 00 03 1b 05 1b 06 09 1f 03 00`, `c0 2b 02 ..`, `c0 2d 02 ..`, `c0 00 00`; mode 0x2a (`*`) still unobserved",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x41e9d1",
+  "layout_tokens": [
+   2,
+   "X_GC0"
+  ],
+  "samples_seen": {
+   "sample14:Macro1": 1
+  },
+  "groupG": true,
+  "groupL": true
+ },
+ "T1:0xc2": {
+  "name": "mes",
+  "operands": "c2 argc flags S*argc; CODED ORDER = caption, flags, TEXT (text last); flags 0 `mes`, 2 `mes-`",
+  "qm_construct": "`mes \"one\" \"cap\"` (argc 2), `mes \"two\" \"cap\" \"OC\"` (argc 3), `mes- \"three\"`, `mes \"Q\" \"cap\" \"YN\"`",
+  "evidence": "handler 0x420192: ip++; argc=code[ip]; flags=code[ip+1]; argc>=2/>=3 each one S via 0x40adcc; message S via 0x424906/0x42422f (0x424906 dispatches S when flag arg is 0). Only argc==1 present in corpus; sample27 stmts 23-25 `c2 02 00 S(cap) S(one)`, `c2 03 00 S(cap) S(OC) S(two)`, `c2 01 02 S(three)`; sample29 stmt 38 (cap, YN, Q): pool offsets prove text is coded last; layout [3,X_GC2] unchanged",
+  "confidence": "layout and argument order observed; MessageBox semantic inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x420192",
+  "layout_tokens": [
+   3,
+   "X_GC2"
+  ],
+  "samples_seen": {
+   "sample14:Macro1": 1
+  },
+  "groupG": true,
+  "groupL": true
+ },
+ "T1:0x35": {
+  "name": "append (+=)",
+  "operands": "35 S(dest var) S(value)",
+  "qm_construct": "`t+\"def\"` / `s+\" 2024\"` string append statement (sample18 #6 and sample11 #1: 35 1f idx | 1e lit)",
+  "evidence": "handler 0x42504a = push 1; call 0x424f66, the same helper skeleton as 0x34 (assign, 0x424f2a, which calls the 0x424906 conversion path): ip++, dispatch S, dispatch S, then convert/concatenate. Corpus: two S operands, tiling ok on 2 occurrences; qml statements correlate",
+  "confidence": "layout observed; 'append' semantic inferred from the two qml statements (both `var+\"lit\"`)",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42504a",
+  "layout_tokens": [
+   1,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample11:Macro1": 1,
+   "sample18:Macro1": 1
+  },
+  "groupG": true
+ },
+ "T2:0x4c": {
+  "name": "str compare = (via 0xad 03-block)",
+  "operands": "4c S(rhs)",
+  "qm_construct": "`if(s=\"Hello World 2024\")` (sample11: ad .. 03 0c 00 | 0a 1f 00 00 | 4c 1e 28 00 00 00 | 00 00)",
+  "evidence": "handler 0x4245e2 = push 0; call 0x424501: ip++, dispatch S (rhs), compare with accumulator via 0x42b407/0x42b446, store 0/1 result. 0x4e (0x4245f2) calls the same helper then flips the result (neq)",
+  "confidence": "observed layout; = vs != assignment follows handler (4e negates 4c) and qml order",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4245e2",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample11:Macro1": 1
+  },
+  "groupG": true
+ },
+ "T2:0x4e": {
+  "name": "str compare != (via 0xad 03-block)",
+  "operands": "4e S(rhs)",
+  "qm_construct": "`if(s!=\"x\")` (sample11: ad 1a 00 03 0c 00 | 0a 1f 00 00 | 4e 1e 3f 00 00 00 | 00 00)",
+  "evidence": "handler 0x4245f2: call 0x424501(0), then result = !(lo|hi) (or [esi],[esi+4]; jne ... xor)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4245f2",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample11:Macro1": 1
+  },
+  "groupG": true
+ },
+ "T2via37:0x5e": {
+  "name": "str method left",
+  "operands": "37 S(str var) b=0xe 0e 00 S(1b 05) S(0a s)",
+  "qm_construct": "`t.left(s 5)` (sample11 stmt 5: 37 1f idx 0e 00 S(1b 05) S(0a s))",
+  "evidence": "handler 0x42387e shared with 0x5f: flag byte, S via 0x40adcc, then inline S dispatch; qml statement order == stream order; tiling ok",
+  "confidence": "observed (order-swap CONFIRMED)",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42387e",
+  "layout_tokens": [
+   2,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample11:Macro1": 1
+  },
+  "groupG": true,
+  "evidence_sample27": "sample27 lists the statements in the opposite order of sample11/14 (right before left, lcase before ucase, setclip before getclip) and the selector bytes follow the NAME, not the position: left 0e, right 0f (args 2 and 3 match the source), lcase 0a, ucase 0b, getclip 1c, setclip 1d",
+  "groupL": true
+ },
+ "T2via37:0x5f": {
+  "name": "str method right",
+  "operands": "37 S(str var) b=0xf 0f 01 S(1b 04) S(0a s)",
+  "qm_construct": "`t.right(s 4)` (sample11 stmt 7: 37 1f idx 0f 01 S(1b 04) S(0a s))",
+  "evidence": "same handler 0x42387e as 0x5e; differs only in b and flag byte; qml statement order == stream order; tiling ok",
+  "confidence": "observed (order-swap CONFIRMED)",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42387e",
+  "layout_tokens": [
+   2,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample11:Macro1": 1
+  },
+  "groupG": true,
+  "evidence_sample27": "sample27 lists the statements in the opposite order of sample11/14 (right before left, lcase before ucase, setclip before getclip) and the selector bytes follow the NAME, not the position: left 0e, right 0f (args 2 and 3 match the source), lcase 0a, ucase 0b, getclip 1c, setclip 1d",
+  "groupL": true
+ },
+ "T2via37:0x5c": {
+  "name": "str method get",
+  "operands": "37 S(str var) b=0xc 0c 01 S(1b 06) S(1b 05) S(0a s)",
+  "qm_construct": "`t.get(s 6 5)` (sample11 stmt 9: 37 1f idx 0c 01 S(1b 06) S(1b 05) S(0a s))",
+  "evidence": "handler 0x4237e9 (shared with 0x5d): flags byte; S (0x40adcc); flags&1 -> second S; then inline S dispatch; qml statement order == stream order; tiling ok",
+  "confidence": "layout observed; method identity inferred from stream position vs sample .qml (one occurrence each; argument roles per handler call order)",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4237e9",
+  "layout_tokens": [
+   2,
+   "X_G5C"
+  ],
+  "samples_seen": {
+   "sample11:Macro1": 1
+  },
+  "groupG": true
+ },
+ "T2via37:0x5b": {
+  "name": "str method ucase",
+  "operands": "37 S(str var) b=0xb 0b 01 00",
+  "qm_construct": "`u.ucase` (sample11 stmt 12: 37 1f idx 0b 01 00)",
+  "evidence": "handler 0x423775 (shared with 0x5a): flags, kind; kind 1 -> 1 S, 2 -> 2 S; kind 0 here; qml statement order == stream order; tiling ok",
+  "confidence": "observed (order-swap CONFIRMED)",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x423775",
+  "layout_tokens": [
+   3,
+   "X_G5A"
+  ],
+  "samples_seen": {
+   "sample11:Macro1": 1
+  },
+  "groupG": true,
+  "evidence_sample27": "sample27 lists the statements in the opposite order of sample11/14 (right before left, lcase before ucase, setclip before getclip) and the selector bytes follow the NAME, not the position: left 0e, right 0f (args 2 and 3 match the source), lcase 0a, ucase 0b, getclip 1c, setclip 1d",
+  "groupL": true
+ },
+ "T2via37:0x5a": {
+  "name": "str method lcase",
+  "operands": "37 S(str var) b=0xa 0a 00 00",
+  "qm_construct": "`u.lcase` (sample11 stmt 14: 37 1f idx 0a 00 00)",
+  "evidence": "same handler 0x423775 as 0x5b; qml statement order == stream order; tiling ok",
+  "confidence": "observed (order-swap CONFIRMED)",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x423775",
+  "layout_tokens": [
+   3,
+   "X_G5A"
+  ],
+  "samples_seen": {
+   "sample11:Macro1": 1
+  },
+  "groupG": true,
+  "evidence_sample27": "sample27 lists the statements in the opposite order of sample11/14 (right before left, lcase before ucase, setclip before getclip) and the selector bytes follow the NAME, not the position: left 0e, right 0f (args 2 and 3 match the source), lcase 0a, ucase 0b, getclip 1c, setclip 1d",
+  "groupL": true
+ },
+ "T2via37:0x57": {
+  "name": "str method trim",
+  "operands": "37 S(str var) b=0x7 07 00 00",
+  "qm_construct": "`u.trim` (sample11 stmt 17: 37 1f idx 07 00 00)",
+  "evidence": "handler 0x42370b (shared with 0x58/0x59; layout X_E59): flags, has; S iff has!=0; qml statement order == stream order; tiling ok",
+  "confidence": "layout observed; method identity inferred from stream position vs sample .qml (one occurrence each; argument roles per handler call order)",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42370b",
+  "layout_tokens": [
+   3,
+   "X_E59"
+  ],
+  "samples_seen": {
+   "sample11:Macro1": 1
+  },
+  "groupG": true
+ },
+ "T2via37:0x6c": {
+  "name": "str method getclip",
+  "operands": "37 S(str var) b=0x1c 1c 00 00",
+  "qm_construct": "`s.getclip` (sample14 stmt 12: 37 1f idx 1c 00 00)",
+  "evidence": "handler 0x423d15 (shared with 0x6d), format \"!iS\" of helper 0x40af67: n byte, unconditional '!' byte, S only if n>=1; n==0 here; qml statement order == stream order; tiling ok",
+  "confidence": "observed (order-swap CONFIRMED)",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x423d15",
+  "layout_tokens": [
+   3,
+   "X_G6C"
+  ],
+  "samples_seen": {
+   "sample14:Macro1": 1
+  },
+  "groupG": true,
+  "evidence_sample27": "sample27 lists the statements in the opposite order of sample11/14 (right before left, lcase before ucase, setclip before getclip) and the selector bytes follow the NAME, not the position: left 0e, right 0f (args 2 and 3 match the source), lcase 0a, ucase 0b, getclip 1c, setclip 1d",
+  "groupL": true
+ },
+ "T2via37:0x6d": {
+  "name": "str method setclip",
+  "operands": "37 S(str var) b=0x1d 1d 00 01",
+  "qm_construct": "`s.setclip` (sample14 stmt 15: 37 1f idx 1d 00 01)",
+  "evidence": "same handler 0x423d15 as 0x6c; trailing byte 01 is the '!' byte; qml statement order == stream order; tiling ok",
+  "confidence": "observed (order-swap CONFIRMED)",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x423d15",
+  "layout_tokens": [
+   3,
+   "X_G6C"
+  ],
+  "samples_seen": {
+   "sample14:Macro1": 1
+  },
+  "groupG": true,
+  "evidence_sample27": "sample27 lists the statements in the opposite order of sample11/14 (right before left, lcase before ucase, setclip before getclip) and the selector bytes follow the NAME, not the position: left 0e, right 0f (args 2 and 3 match the source), lcase 0a, ucase 0b, getclip 1c, setclip 1d",
+  "groupL": true
+ },
+ "T1:0x80": {
+  "name": "act",
+  "operands": "80 n [S_flags if n==2] (S_window | 0x32=omitted)",
+  "qm_construct": "`act w` statement and function form (activates window, SetFocus, returns hwnd). Forms n=2 (flags first, then window) and 0x32 (window omitted = previous window) are handler-derived only, not seen in corpus.",
+  "evidence": "handler 0x42809e: n=code[ip+1]; n==2 -> flags=S; window=S; validity check 0x434394; GetForegroundWindow/GetCurrentThreadId/GetWindowThreadProcessId/AttachThreadInput/SetFocus retry loop; errors 0x202 (activation failed) / 0x1ff (no window); result hwnd stored in ctx+0 (type word ctx+0x18=0); flags&1 = 'not error' (help act flag 1). 2.4.2 handler 0x427d92 has the same API sequence. Source: sample14 stmt#3 `act w2` = `80 01 09 1f 01 00`; original-1 Macro1 #47 `act w` = `80 01 09 1f 09 00`. Nested value form in the 2.4.2 exes `24 L 80 01 e7 02 <s1> <s2>` (UserFnA x2, UserMacroB, original-3 Log) = act(win(name class)) assigned to a variable; original source text unavailable (no source for QM 2.4.2 exes; weak evidence). Help: Commands/IDP_ACT.html.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42809e",
+  "handler_va_2.4.2": "0x427d92",
+  "layout_tokens": [
+   2,
+   "X_80"
+  ],
+  "samples_seen": {
+   "sample14:Macro1": 1,
+   "original-1:Macro1": 1,
+   "original-1:UserFnA(nested)": 2,
+   "original-3:UserMacroB(nested)": 1,
+   "original-3:Log(nested)": 1
+  },
+  "status": "observed",
+  "total_occurrences": 6
+ },
+ "T1:0x86": {
+  "name": "break",
+  "operands": "86 (no operands)",
+  "qm_construct": "`break` (exit the enclosing rep/for loop)",
+  "evidence": "handler 0x420770: ctx+0x1c=0x7530 (sentinel 'skip to end'), ctx+0x1a=1 (flow flag 1 = break). Sibling 0x89 (continue, known) = same sentinel with flag 4 (handler 0x420780); 0xa9 = flag 2; 0x98 = plain jump, no flag. 2.4.2 handler 0x420440 identical. Source: sample10 has exactly two `break` (`rep` + `if(n>6) break`; `for i 0 20` + `if(i=5) break`) and exactly two 0x86 statements, #19 @0xa0 and #29 @0xf3, each a bare `86` as the body of an `ad` if. Also 1-byte statement in UserFnA, <00636>Softly x2 (per exe), UserMacroB.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x420770",
+  "handler_va_2.4.2": "0x420440",
+  "layout_tokens": [
+   1
+  ],
+  "samples_seen": {
+   "sample10:Macro1": 2,
+   "original-1:Softly": 2,
+   "original-1:UserFnA": 1,
+   "original-3:Softly": 2,
+   "original-3:UserMacroB": 1
+  },
+  "status": "observed",
+  "total_occurrences": 8
+ },
+ "T1:0x8a": {
+  "name": "clo",
+  "operands": "8a mode_byte S_window  (0x20 seen; 0x2b '+' = DestroyWindow variant, unseen)",
+  "qm_construct": "`clo w` (close window)",
+  "evidence": "handler 0x42789b (2.4.2: 0x42751c, 107/120 insns equal): b=code[ip+1]; b=='+' -> bl=1; window=S; own-thread window: bl ? DestroyWindow : SendMessageW(WM_CLOSE 0x10); other-thread: PostMessage WM_SYSCOMMAND/SC_CLOSE (0x112/0xf060), wait loop IsWindowVisible/IsWindowEnabled/IsHungAppWindow, then WM_CLOSE. Source: sample14 stmt#11 `clo w2` = `8a 20 09 1f 01 00` (statement order act,max,min,res,key x3,mou,clo matches the .qml exactly). Same bytes in 2.4.2 <00636>Softly stmt#25 (original-1 and log).",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42789b",
+  "handler_va_2.4.2": "0x42751c",
+  "layout_tokens": [
+   2,
+   "S"
+  ],
+  "samples_seen": {
+   "sample14:Macro1": 1,
+   "original-1:Softly": 1,
+   "original-3:Softly": 1
+  },
+  "status": "observed (mode 0x20); '+' variant handler-only",
+  "total_occurrences": 3,
+  "unknown_forms": "mode byte 0x2b: help Commands/IDP_CLO.html documents only `clo [window]`; no QML spelling known, leave unmapped."
+ },
+ "T1:0xa9": {
+  "name": "goto",
+  "operands": "a9 s16_target",
+  "qm_construct": "`goto label` (unconditional jump with flow flag 2)",
+  "evidence": "handler 0x420740: ip+=3; ctx+0x1c=(int16)operand; ctx+0x1a=2. Sibling 0x98 (0x4206f0) does the same without setting flag 2 (the compiler's else/skip jump). Loop (FUN_00420730) does i++ afterwards, so operand = target stream index - 1, the same convention as ad/98. Source: sample15 `if(n<5) goto lab1`: #12 `ad 0d 00 <cond>` #13 `a9 0a 00`; label ` lab1` precedes `n+1` = stream #11, and 0x0a+1 = 11 (ad skip 0x0d lands on #14 `out n`). 2.4.2 handler 0x420410 equivalent. ShutDownProcess (2.4.2 stdlib, no source): `a9 28 00` inside an if, lands at #41 (skips `98 2c 00` at #40), consistent with a forward goto, source spelling unavailable.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x420740",
+  "handler_va_2.4.2": "0x420410",
+  "layout_tokens": [
+   3
+  ],
+  "samples_seen": {
+   "sample15:Macro1": 1,
+   "original-1:ShutDownProcess": 1,
+   "original-3:ShutDownProcess": 1
+  },
+  "status": "observed",
+  "total_occurrences": 3
+ },
+ "T1:0xb7": {
+  "name": "key",
+  "operands": "b7 flags [tag stream unless flags&0x40]; tag1 = key bytes (>5) each optionally followed by 04 S(repeat count), tag2 = S(string, literal text), tag3 = mode byte + S (1=vk/scan/unicode int expr (+opt 04 S repeat), 2=string expr (var/F-string), 3=double delay), tag0 ends. flags: 0=plain, 1=`key+`, 2=`key-`, 0x40=Syntax2 `'keys` (no tag stream), 0x80=function form returning ARRAY(KEYEVENT)",
+  "qm_construct": "`key keys` statement. sample14: `key Ah` = b7 00 01 12 48 00 (tag1: VK_MENU 0x12, VK_H 0x48); `key Y` = b7 00 01 0d 00 (VK_RETURN 0x0d); `key \"hello\"` = b7 00 02 1e <ptr> 00 (tag2 + string S).",
+  "evidence": "Handler 0x420060 -> helper 0x41fdb7(flags): ebx=flags&3 (mode 0 press+release, 1 down, 2 up), flags&0x40, flags&0x80; loop at 0x41fe3a reads tag: 1 -> loop while byte>5: ip++, repeat=0x41ecd7 (if next byte==4 then S count, <0x10000 else err 0x23b; default 1), call 0x41ec0a(vk,mode,repeat); 2 -> S string then 0x40a8fd types text; 3 -> mode byte m, S; m=1 (0x41ff82): value low word !=0 -> 0x41ec0a(vk) else flags 0x01000000/0x02000000 in high byte change +/- mode; m=2 (0x41fe5b): S string typed; m=3 (0x41ff08): double*[0x462910] range-checked, error 0x23b, delay. 0x41ec0a: if vk in {0x10,0x11,0x12,0x5b,0x5c} (table via 0x42f050) it is a modifier, tracked as bit in word ctx+0x12; vk==6 (mode 0): word ctx+0x12 |= (low<<8) i.e. begin group '{' (held modifiers become sticky); vk==7 (mode 0): 0x40a0fe(1) release all modifiers i.e. end group '}'; other vk: press/release xN. OBSERVED sample21_key (28 stmts tile, source known): see tag_stream_observed. Hence corpus `b7 00 01 12 06 4e 07 00` = `key A{n}` (Alt held, group {N}) i.e. Alt+N; bytes 06/07 are the group-brace pseudo keys, not VK codes.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x420060",
+  "handler_va_2.4.2": "0x41fd22",
+  "layout_tokens": [
+   2,
+   "X_FMT"
+  ],
+  "samples_seen": {
+   "sample14:Macro1": 3,
+   "original-1:UserFnA": 1,
+   "original-3:UserMacroB": 2,
+   "original-3:Log": 1,
+   "sample21_key:Macro1": 10
+  },
+  "status": "observed (all key forms of sample21 incl. group braces 06/07, strings, string expr, F-string, key+/key-); (vk)/(scan)/(delay)/(#n)/'syntax2/function forms only from handler, not compiled",
+  "total_occurrences": 17,
+  "tag_stream_observed": {
+   "key An": "b7 00 01 12 4e 00 (VK_MENU, 'N')",
+   "key Cc": "b7 00 01 11 43 00 (VK_CONTROL, 'C')",
+   "key a/2": "b7 00 01 41 bf 32 00 ('A', VK_OEM_2 0xbf='/', '2'); text keys = their VK codes",
+   "key A{ev}": "b7 00 01 12 06 45 56 07 00 (VK_MENU, 06='{', 'E', 'V', 07='}')",
+   "key Wf CSF2": "b7 00 01 5b 46 11 10 71 00 (VK_LWIN, 'F', CTRL, SHIFT, F2=0x71)",
+   "key TT Y F2 N3": "b7 00 01 09 09 0d 71 63 00 (TAB TAB ENTER F2 NUMPAD3=0x63)",
+   "key \"Text\"": "b7 00 02 1e <K@0> 00 (tag2 + const string)",
+   "key \"a[][9]b\"": "b7 00 02 1e <K@5> 00 (escapes kept in string const; expanded at run time/compile into pool; same layout)",
+   "key (ks)": "b7 00 03 02 0a 1f idx 00 (tag3 mode 2 + ld_u32 str var)",
+   "key F\"x={kx}\"": "b7 00 03 02 0a 37 1f .. 05 04 1e K 09 1f idx 00 00 (tag3 mode 2 + fmt_into/sprintf)",
+   "key+ C": "b7 01 01 11 00 (flags=1)",
+   "key- C": "b7 02 01 11 00 (flags=2)",
+   "key A(n)": "commented out in source (;;FAILED), no bytes"
+  }
+ },
+ "T1:0xc8": {
+  "name": "opt",
+  "operands": "c8 u32_option_mask [S value unless mask in (-1,-2)]",
+  "qm_construct": "`opt NAME [value]`; mask -1 = `opt save`, -2 = `opt restore`; omitted value = u8(1). Observed masks: hidden=0x40000, clip=0x40, err=0x1000, waitmsg=0x4000, waitcpu=0x8000, slowmouse=0x10000.",
+  "evidence": "Handler 0x422b17 (2.4.12; 2.4.2 0x422885): ip+=5; mask=dword; -1 push save stack, -2 pop; else value=S: -1 inherit, 0 clear, 1 set, 2 only mask 0x4000 (thread-wide). OBSERVED sample19_opt (source known, 23 stmts tile): `opt hidden 1`=`c8 00 00 04 00 1b 01`; `opt clip 1`=`c8 40 00 00 00 1b 01`; `opt err 1`=`c8 00 10 00 00 1b 01`; `opt waitmsg 1`=`c8 00 40 00 00 1b 01`; `opt waitmsg 2`=`c8 00 40 00 00 1b 02`; `opt waitcpu 1`=`c8 00 80 00 00 1b 01`; `opt slowmouse 1`=`c8 00 00 01 00 1b 01`; `opt hidden -1`=`c8 00 00 04 00 19 ff ff ff ff` (value is i32 imm -1); `opt hidden` (no value)=`c8 00 00 04 00 1b 01` (identical to value 1; default compiled as 1); `opt save`=`c8 ff ff ff ff`; `opt restore`=`c8 fe ff ff ff` (no S). The unnamed mask 0x40000 of Softly (2.4.2, `c8 00 00 04 00 1b 01`) is therefore `opt hidden 1` (byte-identical to sample19 stmt #0); 0x4000 = waitmsg now observed, not inferred. Value 0 not compiled (not in sample).; sample27 stmts 31/32: `opt hidden 0` = `c8 00 00 04 00 1b 00`, `opt clip 0` = `c8 40 00 00 00 1b 00` (explicit value 0 -> S = 1b 00)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x422b17",
+  "handler_va_2.4.2": "0x422885",
+  "layout_tokens": [
+   5,
+   "X_C8"
+  ],
+  "samples_seen": {
+   "original-1:ShutDownProcess": 1,
+   "original-1:Softly": 1,
+   "original-3:ShutDownProcess": 1,
+   "original-3:Softly": 1,
+   "sample19_opt:Macro1": 10
+  },
+  "status": "observed (masks hidden/clip/err/waitmsg/waitcpu/slowmouse, save/restore, value forms 1/2/-1/omitted)",
+  "total_occurrences": 14,
+  "groupL": true
+ },
+ "T1:0xd5": {
+  "name": "run",
+  "operands": "op 00 n(1..7) S*n",
+  "qm_construct": "`run \"notepad.exe\"` (n=1); `run \"a\" \"b\"` (n=2); n=3 `run \"c:.txt\" \"\" \"print\"`; n=4 `run \"notepad.exe\" \"\" \"\" \"c:\\temp\"`; `a=run(...)` same bytes",
+  "evidence": "sample29 stmts 21-25: `d5 00 01/02/04/03 S..` args in written order; handler 0x41f41d byte 2 = argument count",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x41f41d",
+  "handler_va_2.4.2": "0x41f0db",
+  "layout_tokens": [
+   3,
+   "X_D5"
+  ],
+  "samples_seen": {
+   "original-2:UserFnA": 1,
+   "original-2:UserMacroB": 1,
+   "sample29:Macro1": 5,
+   "original-2:Macro1": 2
+  },
+  "status": "observed (1-arg form)",
+  "total_occurrences": 4,
+  "groupL": true
+ },
+ "T1:0xda": {
+  "name": "spe",
+  "operands": "da flag [S_ms if flag!=0]; same opcode is also an expression (get form)",
+  "qm_construct": "STATEMENT (stream-entry start): `spe N` set, `spe` = reset(da 00 -> stores 0 = default), `spe -1` inherit caller, `spe -2` global default. EXPRESSION (nested as S): `int v=spe` = current autodelay, `spe(-1)` = autodelay inherited from caller (get form).",
+  "evidence": "Handler 0x425b6d: setne [ebp-1] = (ip != stream[idx]) i.e. 'is nested (get form)'; flag byte at ip+1; arg via 0x40adcc: -1 inherit (0x4228aa), -2 global [0x473b54], >60000 or <0 -> error 0x23b; set form stores word ctx+0x2a; get form (nested): arg 0/flag 0 -> returns ctx word +0x2a, other positive arg -> error 0x23b, result written to ctx[0..4] (i64). OBSERVED sample20_spe (13 stmts tile): `spe 10`=`da 01 1b 0a`; `spe`=`da 00`; `spe -1`=`da 01 19 ff ff ff ff`; `spe -2`=`da 01 19 fe ff ff ff`; `int sp=spe`=`24 1f 00 00 da 00` (st_i32(L0, da 00)); `sp=spe(-1)`=`24 1f 00 00 da 01 19 ff ff ff ff` (assign, NOT a new opcode; get forms reuse 0xda, distinguished only by being nested). Matches corpus `da 01 1b 0a` (Softly) and `da 00`.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x425b6d",
+  "handler_va_2.4.2": "0x4258a1",
+  "layout_tokens": [
+   2,
+   [
+    "IF",
+    1,
+    255,
+    [
+     "S"
+    ]
+   ]
+  ],
+  "samples_seen": {
+   "original-1:UserFnA": 1,
+   "original-1:Softly": 1,
+   "original-3:UserMacroB": 1,
+   "original-3:Softly": 1,
+   "sample20_spe:Macro1": 6
+  },
+  "status": "observed (set forms and both get forms)",
+  "total_occurrences": 10
+ },
+ "T1:0x82": {
+  "name": "atend",
+  "operands": "82 flag u16(function id) [S if flag&0x7f]",
+  "qm_construct": "`atend sub.Cleanup`: registers a function to run at macro end. sample22 #17 `82 00 9d 05` = flag 0, u16 0x059d = 1437 = res2 id of `<00001>Cleanup` (the #sub). Handler appends a 12-byte {id16, flag, S value} record to a per-context list (dedup by memcmp)",
+  "evidence": "handler 0x422730 (ip+1 flag byte; bit7 -> helper 0x429520, else u16 at ip+2; flag&0x7f -> S via 0x40adcc; list at [[ctx+0x40]+0x58], memcmp 12 B 0x44eda5); source `atend sub.Cleanup` -> stream #17, tiles as 4 B; id equals res2 record id 1437",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x422730",
+  "layout_tokens": [
+   4
+  ],
+  "samples_seen": {
+   "sample22_flow_misc:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0,
+  "open": "flag values other than 0 (atend with args) not seen"
+ },
+ "T1:0x9d": {
+  "name": "foreach",
+  "operands": "9d u16(last body stmt idx) flag S(source string) S(var)",
+  "qm_construct": "`foreach e s` / `foreach e \"x[]y\"`: iterate the lines of a string; body = statements up to stream index u16. flag 0x81 observed = split on LF; handler also has kinds 0x82 (CR trimmed) and >=0x84 (other sources, no sample)",
+  "evidence": "sample22 #20 `9d 15 00 81 0a 1f 03 00 1f 04 00` = `foreach e s` (body #21 `out e`, idx 0x15); #22 `9d 17 00 81 1e <str> 1f 04 00` = `foreach e \"x[]y\"` (body #23 = 0x17). Handler 0x42141a: ip+=3, u16 at ip+1 = body end (passed to loop-body executor 0x420d90), flag&0x8f vs 0x81/0x82/0x84, strchr(0x0a) split (0x450740), 1st S (0x40ae1d) = source, 2nd S = dest str var",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42141a",
+  "layout_tokens": [
+   4,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample22_flow_misc:Macro1": 2
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0,
+  "open": "flags other than 0x81 have no source sample; `9d 05` byte pairs inside 0x01 call headers are a u16 function id (0x059d), not this opcode"
+ },
+ "T1:0x00": {
+  "name": "end_noarg",
+  "operands": "00",
+  "qm_construct": "`end` without arguments: `if(n=2) end` = `ad <skip=2> <cond>` + single byte `00` (sample22 #1/#2)",
+  "evidence": "sample22 #1 `ad 02 00 ...` + #2 `00`; handler 0x4209e0 = jmp 0x42de81 (not decompiled, termination effect inferred from source)",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4209e0",
+  "layout_tokens": [
+   1
+  ],
+  "samples_seen": {
+   "sample22_flow_misc:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x01": {
+  "name": "call_user_func",
+  "operands": "01 argc u16(function id) argc x ARG",
+  "qm_construct": "call of a user function/#sub/stdlib function by res2 id (builtins are 0x49). `ShutDownProcess \"notepad.exe\"` = `01 01 60 02 7c <str> 08 00` (id 0x0260=608=ShutDownProcess); `sub.Sub1 5` = `01 01 9e 05 1b 05` (id 1438=<00001>Sub1); `int r=sub.Sub2(3)` = `24 <r> 01 01 9f 05 1b 03` (id 1439=Sub2). Byte after opcode = arg count (1 in all three). Args: bare S for int, `7c S u16` for the str param of ShutDownProcess. #sub ids start at 1437 (0x059d), res2 name `<parentid>Name`",
+  "evidence": "sample26 Macro1 #1,#6,#7 vs res2 id table (608/1438/1439) and qml lines; same id space used by atend (0x82); layout [4,ARGN] tiles all occurrences",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42a1f0 (qmdis note, not re-derived)",
+  "layout_tokens": [
+   4,
+   "ARGN"
+  ],
+  "samples_seen": {
+   "sample26_stdlib_calls:Macro1": 3
+  },
+  "macro1_occurrences": 3,
+  "stdlib_occurrences": 0,
+  "open": "argc>1 and by-ref arg forms not checked; `<00608>Softly` is a #sub of ShutDownProcess (id 1437) called as `01 01 9d 05` inside it"
+ },
+ "T2via37:0x68": {
+  "name": "getwintext_method",
+  "operands": "37 S(dst str var) 18 S   (T2 key 0x68 = 0x50+0x18, layout [1,S])",
+  "qm_construct": "`s.getwintext(win())` = `37 1f 01 00 18 e7 00` (dst s, selector 0x18, one S; `e7 00` = win() with no args)",
+  "evidence": "sample26 Macro1 #3 vs qml; handler 0x423c7a (call 0x40ada4 = one nested dispatch, then 0x434394/0x43925c); tile_check unresolved 1 -> 0",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x423c7a",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample26_stdlib_calls:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x85": {
+  "name": "bee",
+  "operands": "op b S [S]",
+  "qm_construct": "`bee` / `bee n` / `bee freq dur` (3 occurrences)",
+  "evidence": "handler 0x41ef9e: ip+=1; b=code[ip++]; S dispatched; b&1 -> sound-file path (PlaySoundW iat 0x46084c); b==4 -> 2nd S (0x40adcc) then Beep(freq,dur) iat 0x460154; else MessageBeep(S<<4) iat 0x460660. Bytes `85 00 1b 00`=`bee`, `85 00 1b 01`=`bee 1`, `85 04 19 b8 01 00 00 1b 64`=`bee 440 100` (440=0x1b8, 100=0x64). sample25 #1-#3.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x41ef9e",
+  "layout_tokens": [
+   2,
+   "S",
+   [
+    "IFEQ",
+    1,
+    4,
+    [
+     "S"
+    ]
+   ]
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 3
+  },
+  "macro1_occurrences": 3,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xe3": {
+  "name": "tim",
+  "operands": "op n S*min(n,3)",
+  "qm_construct": "`tim secs` (timer; operand wrapped in 08 to_dbl)",
+  "evidence": "handler 0x426b8e: helper 0x40af67 with format string \"*dii\" @0x4632e8 (star skips opcode byte, count byte n, then count-gated d,i,i = up to 3 S), value*[0x462910](=1000.0) -> 0x4504d6 -> 0x430f03 (timer create). Bytes `e3 01 08 1b 05`=`tim 5`, `e3 01 08 1b 00`=`tim 0` (sample25 #4,#5; only n=1 observed).",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x426b8e",
+  "layout_tokens": [
+   2,
+   "X_IE3"
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 2
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xab": {
+  "name": "hid",
+  "operands": "op flag S(window)",
+  "qm_construct": "`hid w` (flag 0x20) / `hid- w` (flag 0x2d)",
+  "evidence": "handler 0x4281d8: flag=code[ip+1]; every path dispatches one S via 0x40ada4 (window handle) except flag 0x2d followed by byte 0x32 (no-window form, not observed); imports IsWindowVisible/IsWindow. Bytes `ab 20 09 1f 00 00` and `ab 2d 09 1f 00 00` (sample25 #6 `hid w`, #7 `hid- w`; flag char 0x2d matches the source suffix). Which of hide/show the base form does is not proven by the bytes. || 2026-11-08 upgrade: help IDP_HID: `hid` (default) hides, `hid-` shows; flag byte 0x20 (plain) / 0x2d (= ASCII '-', the option suffix) in sample25 #6/#7; handler 0x4281d8 reads that flag; imports IsWindowVisible/IsWindow.; sample27 reverses the order of sample25 (`hid- w` then `hid w`): bytes `ab 2d`/`ab 20` unchanged -> hid=0x20, hid-=0x2d CONFIRMED",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4281d8",
+  "layout_tokens": [
+   2,
+   "X_IAB"
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 2
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0,
+  "groupL": true
+ },
+ "T1:0xdb": {
+  "name": "siz",
+  "operands": "op m n S S S",
+  "qm_construct": "`siz w h win` (mode m=2)",
+  "evidence": "sample25 `siz 300 200 w`, sample27 `siz 400 300 w`: `db 02 03 S S S`; both samples have siz BEFORE mov, so the order test cannot swap them; but sample27 `mov+ 1 2 3 4 w` = `bf 03 03 S*5` shares opcode 0xbf with `mov 20 30 w` (`bf 01 03 S S S`) -> mov = 0xbf (name-bound), siz = 0xdb by elimination; handler 0x427985 shared, mode byte 1 move / 2 size / 3 move+size",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x427985",
+  "layout_tokens": [
+   3,
+   "X_IMOV"
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0,
+  "groupL": true
+ },
+ "T1:0xbf": {
+  "name": "mov",
+  "operands": "bf mode(1 mov, 3 mov+) n(3) S*3 (mode 1) | S*5 (mode 3: x y w h win)",
+  "qm_construct": "`mov x y win`, `mov+ x y w h win`",
+  "evidence": "sample25 `mov 10 10 w` = `bf 01 03 ..`; sample27 `mov 20 30 w` = `bf 01 03 ..`, `mov+ 1 2 3 4 w` = `bf 03 03 1b01 1b02 1b03 1b04 09 1f 03 00`: mov and mov+ share opcode 0xbf (name-bound evidence); handler 0x427985 mode ladder 1/2/3",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x427985",
+  "layout_tokens": [
+   3,
+   "X_IMOV"
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0,
+  "groupL": true
+ },
+ "T1:0xbe": {
+  "name": "men",
+  "operands": "op b S(menu string) S(window)",
+  "qm_construct": "`men \"File\" w` (post menu command)",
+  "evidence": "handler 0x427ad6: b=code[ip+1]; b&1: S via 0x424906 (string) else S via 0x40adcc; then S window 0x40ada4; imports GetMenu/GetSystemMenu/GetSubMenu/GetMenuItemID/PostMessageW. Bytes `be 01 1e 08 00 00 00 09 1f 00 00` (string literal + window var) sample25 #10. Single occurrence, mapped by command order and imports. || 2026-11-08 upgrade: help IDP_MEN + handler 0x427ad6 (menu string S, window S; GetMenu/GetSubMenu/GetMenuItemID/PostMessageW imports) + bytes `be 01 1e<str> 09 1f..` for `men \"File\" w` (sample25 #10).",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x427ad6",
+  "layout_tokens": [
+   2,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x87": {
+  "name": "but",
+  "operands": "op b n S(text) S(window)",
+  "qm_construct": "`but \"OK\" w` (n=1: text + window; n=0: window only)",
+  "evidence": "handler 0x428570: b1=code[ip+1], n=code[ip+2]; n==1: S 0x40adcc + S window 0x40ada4; n==0: S window; other n: ip-- then window S (not evidenced; layout raises Unresolved). Imports GetDlgCtrlID/GetParent (button lookup). Bytes `87 00 01 1e 0d 00 00 00 09 1f 00 00` sample25 #11. Single occurrence, command order + imports. || 2026-11-08 upgrade: help IDP_BUT + handler 0x428570 (n==1: text S + window S; GetDlgCtrlID/GetParent) + bytes for `but \"OK\" w` (sample25 #11).",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x428570",
+  "layout_tokens": [
+   3,
+   "X_I87"
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xb8": {
+  "name": "lef",
+  "operands": "op letter flag n S(x) S(y) [window|1b 00] [S]",
+  "qm_construct": "`lef x y win` mouse click (letter byte 0x6c = 'l')",
+  "evidence": "shared handler 0x41e7f3 (0x93,0xb8,0xc1,0xd4): letter byte code[ip+1] compared with 0x6c 'l' / 0x72 'r' / 0x6d 'm' (else double click) selecting button masks (0x41e899..); flag byte (0x20 space; 0x2b / 0x2d compared); count byte n (0 -> no operands, else 0x40ba98 -> 0x40b50d: S x, S y, n>2: (1b 00 | S window via 0x40b325), n>3: +S). Bytes `b8 6c 20 03 1b 0a 1b 0a 09 1f 00 00` = `lef 10 10 w` (sample25 #12). The letter byte equals the first letter of the command.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x41e7f3",
+  "layout_tokens": [
+   3,
+   "X_IMOUSE"
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xd4": {
+  "name": "rig",
+  "operands": "op letter flag n S(x) S(y) [window|1b 00] [S]",
+  "qm_construct": "`rig x y win` mouse click (letter byte 0x72 = 'r')",
+  "evidence": "shared handler 0x41e7f3 (0x93,0xb8,0xc1,0xd4): letter byte code[ip+1] compared with 0x6c 'l' / 0x72 'r' / 0x6d 'm' (else double click) selecting button masks (0x41e899..); flag byte (0x20 space; 0x2b / 0x2d compared); count byte n (0 -> no operands, else 0x40ba98 -> 0x40b50d: S x, S y, n>2: (1b 00 | S window via 0x40b325), n>3: +S). Bytes `d4 72 20 03 1b 0a 1b 0a 09 1f 00 00` = `rig 10 10 w` (sample25 #13). The letter byte equals the first letter of the command.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x41e7f3",
+  "layout_tokens": [
+   3,
+   "X_IMOUSE"
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xc1": {
+  "name": "mid",
+  "operands": "op letter flag n S(x) S(y) [window|1b 00] [S]",
+  "qm_construct": "`mid x y win` mouse click (letter byte 0x6d = 'm')",
+  "evidence": "shared handler 0x41e7f3 (0x93,0xb8,0xc1,0xd4): letter byte code[ip+1] compared with 0x6c 'l' / 0x72 'r' / 0x6d 'm' (else double click) selecting button masks (0x41e899..); flag byte (0x20 space; 0x2b / 0x2d compared); count byte n (0 -> no operands, else 0x40ba98 -> 0x40b50d: S x, S y, n>2: (1b 00 | S window via 0x40b325), n>3: +S). Bytes `c1 6d 20 03 1b 0a 1b 0a 09 1f 00 00` = `mid 10 10 w` (sample25 #14). The letter byte equals the first letter of the command.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x41e7f3",
+  "layout_tokens": [
+   3,
+   "X_IMOUSE"
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x93": {
+  "name": "dou",
+  "operands": "op letter flag n S(x) S(y) [window|1b 00] [S]",
+  "qm_construct": "`dou x y win` mouse click (letter byte 0x64 = 'd')",
+  "evidence": "shared handler 0x41e7f3 (0x93,0xb8,0xc1,0xd4): letter byte code[ip+1] compared with 0x6c 'l' / 0x72 'r' / 0x6d 'm' (else double click) selecting button masks (0x41e899..); flag byte (0x20 space; 0x2b / 0x2d compared); count byte n (0 -> no operands, else 0x40ba98 -> 0x40b50d: S x, S y, n>2: (1b 00 | S window via 0x40b325), n>3: +S). Bytes `93 64 20 03 1b 0a 1b 0a 09 1f 00 00` = `dou 10 10 w` (sample25 #15). The letter byte equals the first letter of the command.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x41e7f3",
+  "layout_tokens": [
+   3,
+   "X_IMOUSE"
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xcc": {
+  "name": "paste (= outp)",
+  "operands": "op flag (S ...) [same layout as 0xc9]",
+  "qm_construct": "`paste \"text\"` and `outp \"text\"` compile to the identical pattern `cc 01 1e <str>`",
+  "evidence": "slot 0xcc has the SAME handler VA 0x4200d7 as 0xc9 (out): flag bit0 -> alternative sink via 0x42007a; bit7 -> 0x402856; bit1 -> format form. sample25 #16 and #17 are the statements `paste` and `outp` (cc 01 1e 10 / cc 01 1e 15; pool offsets follow source order); bytes do not say which is which. || 2026-11-08 upgrade: help IDP_PASTE: `paste` is the same command as `outp` (added QM 2.3.3, outp kept for compatibility); slot 0xcc shares handler 0x4200d7 with 0xc9; flag byte bit0 (value 1) is set for both statements in sample25 (#16/#17 identical `cc 01 1e..`), so the bytes cannot and need not distinguish them. qmdec spells `paste`. paste+ (hybrid) and other flag values are not seen.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4200d7",
+  "layout_tokens": [
+   2,
+   "X_C9"
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 2
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xc3": {
+  "name": "mkdir",
+  "operands": "op b S(path) [S]",
+  "qm_construct": "`mkdir \"c:\\temp\\qmtest\"` (b=1)",
+  "evidence": "handler 0x41edbd: b=code[ip+1]; S (0x40adcc); b>1: +S; call 0x431961(path, mode, &err), failure -> 0x401abb code 0x1fd (cf. 0x95 del uses 0x1fb). Bytes `c3 01 1e 1a 00 00 00` sample25 #18 mapped by command order (pool offset 0x1a follows paste/outp). Single occurrence. layout_final [2,S] lacks the b>1 second S (not observed). || 2026-11-08 upgrade: help IDP_MKDIR (`mkdir folder [parent]`) + handler 0x41edbd (S folder; b>1 -> second S = parent string) + sample25 #18 bytes `c3 01 1e..`. The b>1 second S is handler-certain but UNOBSERVED (no sample has b>1); layout now [2,S,[IFGT b>1: S]] (analysis/layout_final.json, qmlayout.py IFGT); qmdec still raises TODO for b!=1.; sample27 stmt 22 `c3 02 S(path) S(parent)` = `mkdir \"c:\\temp\\qmtest\" \"c:\\temp\"` (b=2 -> parent S, layout IFGT already in layout_final)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x41edbd",
+  "layout_tokens": [
+   2,
+   "S",
+   [
+    "IFGT",
+    1,
+    1,
+    [
+     "S"
+    ]
+   ]
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0,
+  "groupL": true
+ },
+ "T1:0x95": {
+  "name": "del",
+  "operands": "op b c S(path) [S]",
+  "qm_construct": "`del \"c:\\temp\\qmtest\\x.txt\"` (b=1)",
+  "evidence": "handler 0x41ed12: b=code[ip+1], c=code[ip+2]; S path via 0x424906; b==1 -> flags const 0x4d4 else S (0x40adcc); c==0x2d clears bit 0x40; call 0x4314e2 -> 0x431499, error 0x1fb. Bytes `95 01 00 1e 29 00 00 00` sample25 #19 (pool 0x29 = 0x1a+15 chars of the mkdir path). Single occurrence, command order. || 2026-11-08 upgrade: help IDP_DEL (del[-] file [flags]; '-' = delete instead of Recycle Bin = c==0x2d clears bit 0x40 in handler 0x41ed12) + sample25 #19 bytes.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x41ed12",
+  "layout_tokens": [
+   3,
+   "S",
+   [
+    "IFEQ",
+    1,
+    1,
+    [],
+    [
+     "S"
+    ]
+   ]
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x8b": {
+  "name": "cop",
+  "operands": "op b1 b2 b3 S(src) S(dst) [S]",
+  "qm_construct": "`cop \"c:\\a.txt\" \"c:\\b.txt\"`",
+  "evidence": "handler 0x41f806: reads 3 bytes; 2x S via 0x424906 (two path strings), b2>2 -> +S (0x40adcc); b3 0x2d/0x2b/0x21/0x2a select flag variants. Bytes `8b 02 02 00 1e 3e 00 00 00 1e 47 00 00 00` sample25 #20 (pool 0x3e, 0x47 = two paths after del's 0x29). Single occurrence, command order. || 2026-11-08 upgrade: help IDP_COP (cop from to [flags]; options + - ! select flag variants, cf. handler b3 0x2d/0x2b/0x21) + handler 0x41f806 (two path S) + sample25 #20 bytes.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x41f806",
+  "layout_tokens": [
+   4,
+   "X_I8B"
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xbb": {
+  "name": "mac",
+  "operands": "op b n S(name) [S*]",
+  "qm_construct": "`mac \"Other\"` (n=1)",
+  "evidence": "bytes `bb 80 01 1e 50 00 00 00` sample25 #21; layout from group D (handler 0x4230c6/0x42332f: S + max(n-1,0) S); 0x42332f dispatches a string via 0x424906. Mapped by command order (pool 0x50 follows cop). Single occurrence; semantic as macro call not independently proven.",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42332f",
+  "layout_tokens": [
+   3,
+   "X_BB"
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xb9": {
+  "name": "lock",
+  "operands": "op n flag S S",
+  "qm_construct": "`lock` (flag 0x00) / `lock-` (flag 0x2d)",
+  "evidence": "handler 0x41fa8c: n=code[ip+1], flag=code[ip+2]; S via 0x40ae1d (address); flag 0x2d -> call 0x41f140 on existing object, else 2nd S (0x40ae1d) plus n>1/n>2 S via 0x40adcc. Bytes `b9 00 00 20 14 00 1f 01 00` and `b9 00 2d 20 14 00 1f 01 00` (sample25 #22 `lock`, #23 `lock-`): both carry two S so tiling needs [3,S,S] although the handler needs 1 S for 0x2d (VM re-reads IP from the stream, so unconsumed bytes are harmless). Command order + flag char. || 2026-11-08 upgrade: help IDP_LOCK (`lock [name] [mutex] [timeoutMS]` / `lock- [name]`; '-' = unlock = flag 0x2d) + handler 0x41fa8c + sample25 #22/#23 bytes. The layout [3,S,S] tiles both because the compiler emits the hidden-global operand S (`20 14 00` = opcode 0x20 id 0x14, res10) and a second S for lock- as well; the handler itself needs only 1 S for lock-. n>0 (named lock, mutex, timeout) is UNOBSERVED; qmdec raises TODO for n!=0 and does not render the internal operands.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x41fa8c",
+  "layout_tokens": [
+   3,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 2
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x1c": {
+  "name": "lit_dbl",
+  "operands": "op f64",
+  "qm_construct": "double literal (`wait 0.5` -> `1c 00 00 00 00 00 00 e0 3f`)",
+  "evidence": "sample23 #1 `30 1c 00 00 00 00 00 00 e0 3f` = `wait 0.5` (IEEE754 0.5); 9-byte layout tile-confirmed; handler not examined.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": null,
+  "layout_tokens": [
+   9
+  ],
+  "samples_seen": {
+   "sample23_wait_kinds:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x8c": {
+  "name": "child",
+  "operands": "8c b S*m (b&0x80/0x40 add S; m=b&0x1f<=3 evidenced)",
+  "qm_construct": "child(class text parent)",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x428de6",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x428de6",
+  "layout_tokens": [
+   2,
+   "X_J8C"
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xb4": {
+  "name": "id",
+  "operands": "b4 n S S [S if n>2]",
+  "qm_construct": "id(n parent)",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x429260",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x429260",
+  "layout_tokens": [
+   2,
+   "X_JB4"
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xcd": {
+  "name": "pixel",
+  "operands": "cd n S S (n>2: 1b 00 | extras)",
+  "qm_construct": "pixel(x y)",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x421f69/0x40b50d",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x421f69",
+  "layout_tokens": [
+   2,
+   "X_JCD"
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xa4": {
+  "name": "findw",
+  "operands": "a4 n S*n S",
+  "qm_construct": "findw(str word)",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x425405 (0x40aebb + S)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x425405",
+  "layout_tokens": [
+   2,
+   "X_JN",
+   "S"
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xa5": {
+  "name": "findt",
+  "operands": "a5 n u16 S*min(n,4)",
+  "qm_construct": "findt(str n)",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x42546e format *&iiii",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42546e",
+  "layout_tokens": [
+   4,
+   "X_JF4"
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xa6": {
+  "name": "findl",
+  "operands": "a6 n u16 S*min(n,2)",
+  "qm_construct": "findl(str n)",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x4254b7 format *&ii",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4254b7",
+  "layout_tokens": [
+   4,
+   "X_JF2"
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x96": {
+  "name": "dir",
+  "operands": "96 n u16 S*min(n,2)",
+  "qm_construct": "dir(path)",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x421dad format *&ii",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x421dad",
+  "layout_tokens": [
+   4,
+   "X_JF2"
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xc4": {
+  "name": "matchw",
+  "operands": "c4 n S*n",
+  "qm_construct": "matchw(str pattern)",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x42560a",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42560a",
+  "layout_tokens": [
+   2,
+   "X_JN"
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xc5": {
+  "name": "numlines",
+  "operands": "c5 S",
+  "qm_construct": "numlines(str)",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x4251e8",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4251e8",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x9b": {
+  "name": "empty/len family (byte1 0x65=empty)",
+  "operands": "9b byte S",
+  "qm_construct": "empty(str)",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x42505a shared with 0xba",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42505a",
+  "layout_tokens": [
+   2,
+   "S"
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xba": {
+  "name": "len (byte1 0x6c)",
+  "operands": "ba byte S",
+  "qm_construct": "len(str)",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x42505a cmp edi,0x6c",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42505a",
+  "layout_tokens": [
+   2,
+   "S"
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xa7": {
+  "name": "findb",
+  "operands": "a7 n S S (n==2 evidenced)",
+  "qm_construct": "findb(str str)",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x425556",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x425556",
+  "layout_tokens": [
+   2,
+   "X_JA7"
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xa0": {
+  "name": "findc",
+  "operands": "a0 flags S S [S if flags&1]",
+  "qm_construct": "findc(str char)",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x4252ca",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4252ca",
+  "layout_tokens": [
+   2,
+   "X_JA0"
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xa8": {
+  "name": "findrx",
+  "operands": "a8 n opt S S",
+  "qm_construct": "findrx(str regex)",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x425790",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x425790",
+  "layout_tokens": [
+   3,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xe6": {
+  "name": "val",
+  "operands": "e6 byte S",
+  "qm_construct": "val(\"123\")",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x425156",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x425156",
+  "layout_tokens": [
+   2,
+   "S"
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xe2": {
+  "name": "tok",
+  "operands": "e2 n flag S*n",
+  "qm_construct": "tok(str ARRAY)",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x4254f2",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4254f2",
+  "layout_tokens": [
+   3,
+   "X_E2"
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xce": {
+  "name": "perf",
+  "operands": "ce",
+  "qm_construct": "perf",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x421fd6",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x421fd6",
+  "layout_tokens": [
+   1
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xb2": {
+  "name": "iif",
+  "operands": "b2 S(cond) u16 u16 S S 00 00",
+  "qm_construct": "iif(cond a b)",
+  "evidence": "sample24_builtin_funcs source-order mapping + handler 0x421bc5",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x421bc5",
+  "layout_tokens": [
+   1,
+   "S",
+   4,
+   "S",
+   "S",
+   2
+  ],
+  "samples_seen": {
+   "sample24:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x20": {
+  "name": "glob_addr (hidden global variable address by res10 id)",
+  "operands": "op u16 id (looked up by the first u16 of the res10 record, NOT by index)",
+  "qm_construct": "address of a hidden global variable declared at load by resource name 10: `int+ g_a` / `str+ g_s` (user globals) and the compiler's hidden lock object (`lock` operand)",
+  "evidence": "res10 record = {u16 id, u16 size, u16 type, u16 flags} (loader 2.4.12 FUN_0040248f: count, memcpy of 8 bytes per record into a 12-byte table entry [0x473be0], then 0x40f430(i): size != 0 -> malloc(size) raw storage, size == 0 -> object created by the factory registered for `type` (table 0x473bbc, vtable+0x40); opcode 0x20 handler 0x412c00 finds the record by id (0x412bcc) and sets ctx+0x14 = storage, ctx type byte = type (0xff if >= 0x2a), ctx flag byte = flags). OBSERVED sample34: res10 = (21,4,0,8) (22,4,0,8) (23,0,4,8) = `int+ g_a`, `int+ g_b=5`, `str+ g_s=\"x\"` in declaration order; code `24 20 16 00 1b 05` g_b=5, `34 20 17 00 1e 0c 00 00 00` g_s=\"x\", `24 20 15 00 03 ...` g_a=g_a+1, `35 20 17 00 1e 0e..` g_s+\"y\", `c9 00 09 20 15 00` out g_a; `int+` declarations emit NO statement. sample25 lock object = (0x14, 0, 0x28, 0) (type 0x28 = lock object, flags 0). flags 8 = user `int+`/`str+` global (observed), 0 = compiler hidden object.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "table 0x473be0",
+  "layout_tokens": [
+   3
+  ],
+  "samples_seen": {
+   "sample25_commands:Macro1": 2,
+   "sample34_scopes_variants:Macro1": 5
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0,
+  "open": "global variable NAMES are not stored anywhere in the exe (decompiler names glob<id>); `int+ g=5` has no declaration statement, its value is a normal store executed each run"
+ },
+ "T1:0x04": {
+  "name": "neg_i32",
+  "operands": "op S",
+  "qm_construct": "unary minus `u=-u`",
+  "evidence": "sample30 stmt 44 `24 1f 14 00 04 09 1f 14 00` (source line `u=-u`); one statement per unary op",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x412720",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample08:Macro1": 1,
+   "sample09:Macro1": 1,
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T1:0x05": {
+  "name": "bitnot_i32",
+  "operands": "op S",
+  "qm_construct": "unary `u=~u`",
+  "evidence": "sample30 stmt 45 `24 1f 14 00 05 09 1f 14 00` (source `u=~u`); also sample08",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x412770",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample08:Macro1": 1,
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T1:0x0e": {
+  "name": "ld_i64",
+  "operands": "op S(addr)",
+  "qm_construct": "typed load of a long operand (`L+1` inside a 0x03 block, `long LL=*lp`)",
+  "evidence": "sample30 stmt 5 `03 .. 0e 1f 03 00 27 1b 01` (long M=L+1) and stmt 23 `28 1f 0b 00 0e 0f 1f 0a 00` (LL=*lp); sample13",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4124c0",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample13:Macro1": 10,
+   "sample30:Macro1": 2
+  },
+  "groupL": true
+ },
+ "T1:0x0f": {
+  "name": "deref",
+  "operands": "op S(pointer variable)",
+  "qm_construct": "pointer dereference `*p` (load: under 0x09/0x0d/0x0e; store: as destination of 0x24/0x28)",
+  "evidence": "sample30: `int a=*p` stmt 2 `24 1f 02 00 09 0f 1f 01 00`; `*p=10` stmt 3 `24 0f 1f 01 00 1b 0a`; `double dd=*dp` stmt 21; `long LL=*lp` stmt 23; `*lp=99` stmt 24; `out *sp` stmt 38 `c9 00 0a 0f 1f 11 00`. Six source lines, four pointer types",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x412000",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "original-2:UserFnA": 1,
+   "sample30:Macro1": 6
+  },
+  "groupL": true
+ },
+ "T1:0x15": {
+  "name": "member_ptr_ofs0",
+  "operands": "op S(pointer var) t1 t2",
+  "qm_construct": "member at offset 0 through a pointer to a user type `tp.a=5`, `int k=tp.a` (member name not stored)",
+  "evidence": "sample30 stmts 30/31 `24 15 1f 0d 00 00 00 1b 05`, `24 1f 0e 00 09 15 1f 0d 00 00 00`; layout [1,S,2]; sibling 0x14 adds a u16 offset",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x412150",
+  "layout_tokens": [
+   1,
+   "S",
+   2
+  ],
+  "samples_seen": {
+   "original-2:<00636>Softly": 4,
+   "sample26:<00608>Softly": 2,
+   "sample30:Macro1": 2
+  },
+  "groupL": true
+ },
+ "T1:0x18": {
+  "name": "arr_member_elem",
+  "operands": "op S(member) S(index) u16",
+  "qm_construct": "element of an array member `t.c[1]=7` (byte c[4] at offset 0x20)",
+  "evidence": "sample30 stmt 28 `26 18 12 1f 0c 00 01 10 20 00 1b 01 01 00 1b 07`; one occurrence, trailing u16=1 not interpreted",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4122a0",
+  "layout_tokens": [
+   1,
+   "S",
+   "S",
+   2
+  ],
+  "samples_seen": {
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T1:0x1d": {
+  "name": "const_i64",
+  "operands": "op i64(8 bytes, LE)",
+  "qm_construct": "64-bit integer constant (`1234567890123`, `5000000000`)",
+  "evidence": "sample30 stmt 4 `1d cb 04 fb 71 1f 01 00 00` = 0x11F71FB04CB = 1234567890123 and stmt 36 `1d 00 f2 05 2a 01 00 00 00` = 5000000000: values equal the source literals",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40eb85",
+  "layout_tokens": [
+   9
+  ],
+  "samples_seen": {
+   "sample30:Macro1": 2
+  },
+  "groupL": true
+ },
+ "T1:0x26": {
+  "name": "st_u8",
+  "operands": "op S(dst) S(src)",
+  "qm_construct": "typed store into a byte local, `byte b=200`",
+  "evidence": "sample30 `byte b=200` (type code in the local descriptor: byte 1, word 2, double 5, long 6); also sample09/13",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40f610",
+  "layout_tokens": [
+   1,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample13:Macro1": 1,
+   "sample30:Macro1": 2
+  },
+  "groupL": true
+ },
+ "T1:0x27": {
+  "name": "st_u16",
+  "operands": "op S(dst) S(src)",
+  "qm_construct": "typed store into a word local, `word w=65535`",
+  "evidence": "sample30 `word w=65535` (type code in the local descriptor: byte 1, word 2, double 5, long 6); also sample09/13",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40f6a0",
+  "layout_tokens": [
+   1,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample13:Macro1": 1,
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T1:0x28": {
+  "name": "st_i64",
+  "operands": "op S(dst) S(src)",
+  "qm_construct": "typed store into a long local, `long L=1234567890123`",
+  "evidence": "sample30 `long L=1234567890123` (type code in the local descriptor: byte 1, word 2, double 5, long 6); also sample09/13",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40f740",
+  "layout_tokens": [
+   1,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample13:Macro1": 6,
+   "sample30:Macro1": 5
+  },
+  "groupL": true
+ },
+ "T1:0x29": {
+  "name": "st_f64",
+  "operands": "op S(dst) S(src)",
+  "qm_construct": "typed store into a double local, `double d=1.5`",
+  "evidence": "sample30 `double d=1.5` (type code in the local descriptor: byte 1, word 2, double 5, long 6); also sample09/13",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40f7b0",
+  "layout_tokens": [
+   1,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample09:Macro1": 10,
+   "sample13:Macro1": 2,
+   "sample30:Macro1": 5
+  },
+  "groupL": true
+ },
+ "T1:0x2c": {
+  "name": "rmw_u8",
+  "operands": "op S(target) T2(op+rhs)",
+  "qm_construct": "compound update statement on a byte variable, `b+1`",
+  "evidence": "sample30 statements in source order; T2 key per statement listed under T2:0x27..0x31; table-2 operator follows the target",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40f930",
+  "layout_tokens": [
+   1,
+   "S",
+   "T2"
+  ],
+  "samples_seen": {
+   "sample13:Macro1": 1,
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T1:0x2d": {
+  "name": "rmw_u16",
+  "operands": "op S(target) T2(op+rhs)",
+  "qm_construct": "compound update statement on a word variable, `w+1`",
+  "evidence": "sample30 statements in source order; T2 key per statement listed under T2:0x27..0x31; table-2 operator follows the target",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40f9d0",
+  "layout_tokens": [
+   1,
+   "S",
+   "T2"
+  ],
+  "samples_seen": {
+   "sample13:Macro1": 1,
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T1:0x2e": {
+  "name": "rmw_i64",
+  "operands": "op S(target) T2(op+rhs)",
+  "qm_construct": "compound update statement on a long variable, `L+1` `L*2` `L-3` `L<<2` `L>>1` `L&255` `L|1` `L^7`",
+  "evidence": "sample30 statements in source order; T2 key per statement listed under T2:0x27..0x31; table-2 operator follows the target",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40fa70",
+  "layout_tokens": [
+   1,
+   "S",
+   "T2"
+  ],
+  "samples_seen": {
+   "sample30:Macro1": 8
+  },
+  "groupL": true
+ },
+ "T1:0x2f": {
+  "name": "rmw_f64",
+  "operands": "op S(target) T2(op+rhs)",
+  "qm_construct": "compound update statement on a double variable, `d*2`",
+  "evidence": "sample30 statements in source order; T2 key per statement listed under T2:0x27..0x31; table-2 operator follows the target",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40faf0",
+  "layout_tokens": [
+   1,
+   "S",
+   "T2"
+  ],
+  "samples_seen": {
+   "sample09:Macro1": 2,
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2:0x05": {
+  "name": "mod",
+  "operands": "op [type byte for 0x39-0x4b] S(rhs)",
+  "qm_construct": "operator `%`",
+  "evidence": "sample30 `sh=sh%3`: one statement per operator, operand constants match the source; stmt order == stream order",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40fc10",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample08:Macro1": 1,
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2:0x09": {
+  "name": "xor",
+  "operands": "op [type byte for 0x39-0x4b] S(rhs)",
+  "qm_construct": "operator `^`",
+  "evidence": "sample30 `sh=sh^3`: one statement per operator, operand constants match the source; stmt order == stream order",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40ffc0",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample08:Macro1": 1,
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2:0x27": {
+  "name": "add_i64",
+  "operands": "op [type byte for 0x39-0x4b] S(rhs)",
+  "qm_construct": "operator `+`",
+  "evidence": "sample30 `L+1`, `long M=L+1`: one statement per operator, operand constants match the source; stmt order == stream order",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x410190",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample30:Macro1": 2
+  },
+  "groupL": true
+ },
+ "T2:0x28": {
+  "name": "sub_i64",
+  "operands": "op [type byte for 0x39-0x4b] S(rhs)",
+  "qm_construct": "operator `-`",
+  "evidence": "sample30 `L-3`: one statement per operator, operand constants match the source; stmt order == stream order",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4101c0",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2:0x29": {
+  "name": "mul_i64",
+  "operands": "op [type byte for 0x39-0x4b] S(rhs)",
+  "qm_construct": "operator `*`",
+  "evidence": "sample30 `L*2`: one statement per operator, operand constants match the source; stmt order == stream order",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4101f0",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample13:Macro1": 1,
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2:0x2c": {
+  "name": "and_i64",
+  "operands": "op [type byte for 0x39-0x4b] S(rhs)",
+  "qm_construct": "operator `&`",
+  "evidence": "sample30 `L&255` (rhs 1b ff): one statement per operator, operand constants match the source; stmt order == stream order",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4102b0",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2:0x2d": {
+  "name": "or_i64",
+  "operands": "op [type byte for 0x39-0x4b] S(rhs)",
+  "qm_construct": "operator `|`",
+  "evidence": "sample30 `L|1`: one statement per operator, operand constants match the source; stmt order == stream order",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4102e0",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2:0x2f": {
+  "name": "xor_i64",
+  "operands": "op [type byte for 0x39-0x4b] S(rhs)",
+  "qm_construct": "operator `^`",
+  "evidence": "sample30 `L^7` (rhs 1b 07): one statement per operator, operand constants match the source; stmt order == stream order",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x410350",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2:0x30": {
+  "name": "shr_i64",
+  "operands": "op [type byte for 0x39-0x4b] S(rhs)",
+  "qm_construct": "operator `>>`",
+  "evidence": "sample30 `L>>1`: one statement per operator, operand constants match the source; stmt order == stream order",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x410380",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2:0x31": {
+  "name": "shl_i64",
+  "operands": "op [type byte for 0x39-0x4b] S(rhs)",
+  "qm_construct": "operator `<<`",
+  "evidence": "sample30 `L<<2`: one statement per operator, operand constants match the source; stmt order == stream order",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4103c0",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample13:Macro1": 1,
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2:0x3b": {
+  "name": "sub_f64",
+  "operands": "op [type byte for 0x39-0x4b] S(rhs)",
+  "qm_construct": "operator `-`",
+  "evidence": "sample30 `dv=dv-1`: one statement per operator, operand constants match the source; stmt order == stream order",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x410770",
+  "layout_tokens": [
+   2,
+   "S"
+  ],
+  "samples_seen": {
+   "sample09:Macro1": 1,
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2:0x3c": {
+  "name": "mul_f64",
+  "operands": "op [type byte for 0x39-0x4b] S(rhs)",
+  "qm_construct": "operator `*`",
+  "evidence": "sample30 `d*2`: one statement per operator, operand constants match the source; stmt order == stream order",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x410840",
+  "layout_tokens": [
+   2,
+   "S"
+  ],
+  "samples_seen": {
+   "sample09:Macro1": 3,
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2:0x3d": {
+  "name": "div_f64",
+  "operands": "op [type byte for 0x39-0x4b] S(rhs)",
+  "qm_construct": "operator `/`",
+  "evidence": "sample30 `double dv=10.0/4`: one statement per operator, operand constants match the source; stmt order == stream order",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x410910",
+  "layout_tokens": [
+   2,
+   "S"
+  ],
+  "samples_seen": {
+   "sample09:Macro1": 1,
+   "sample30:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T1:0xcb": {
+  "name": "ont",
+  "operands": "op mode(0x20 | 0x2d) S(window)",
+  "qm_construct": "`ont w` / `ont- w` (mode 0x2d = `-`); `a=ont(w)` has the same bytes",
+  "evidence": "sample29 stmts 1-3: `cb 20 09 1f 00 00`, `cb 2d ..`, `24 1f 01 00 cb 20 ..`; handler 0x4282eb: ip+=2 then 0x40ada4 (one S), mode byte compared with 0x2d",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4282eb",
+  "layout_tokens": [
+   2,
+   "S"
+  ],
+  "samples_seen": {
+   "sample29:Macro1": 3
+  },
+  "groupL": true
+ },
+ "T1:0xae": {
+  "name": "ifk",
+  "operands": "op u16(last stmt of block) 01 letter(0x6b) flags(bit7 = `-`) S(key)",
+  "qm_construct": "`ifk F2` / `ifk- (1)`: the key operand is a string const \"F2\" or a number",
+  "evidence": "sample29 stmts 17/19 `ae 12 00 01 6b 00 1e..`, `ae 14 00 01 6b 80 1b 01`; handler 0x420a22 (shared with 0xaf/0xb0) reads u16, count byte, letter 0x6b, flags, then 0x40adcc; jump u16 = stream index of the last statement of the block (here == i+1 each time)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x420a22",
+  "layout_tokens": [
+   6,
+   "S"
+  ],
+  "samples_seen": {
+   "sample29:Macro1": 2
+  },
+  "groupL": true
+ },
+ "T1:0xaf": {
+  "name": "iff",
+  "operands": "op u16 01 letter(0x66) flags(bit7 = `-`) S(file)",
+  "qm_construct": "`iff \"c:.txt\"` / `iff- \"c:.txt\"`",
+  "evidence": "sample29 stmts 13/15 `af 0e 00 01 66 00 1e..`, `af 10 00 01 66 80 1e..`; handler 0x420a22 branch letter 0x66",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x420a22",
+  "layout_tokens": [
+   6,
+   "S"
+  ],
+  "samples_seen": {
+   "sample29:Macro1": 2
+  },
+  "groupL": true
+ },
+ "T1:0xb0": {
+  "name": "ifa",
+  "operands": "op u16 01 letter(0x61) flags(bit7 = `-`) S(window)",
+  "qm_construct": "`ifa w` / `ifa- w`",
+  "evidence": "sample29 stmts 9/11 `b0 0a 00 01 61 00 09 1f 00 00`, `b0 0c 00 01 61 80 ..`; handler 0x420a22 branch letter 0x61",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x420a22",
+  "layout_tokens": [
+   6,
+   "S"
+  ],
+  "samples_seen": {
+   "sample29:Macro1": 2
+  },
+  "groupL": true
+ },
+ "T1:0xde": {
+  "name": "shutdown",
+  "operands": "op n(1) S",
+  "qm_construct": "`shutdown 0` / `shutdown 5`",
+  "evidence": "sample29 stmts 36/37 `de 01 1b 00`, `de 01 1b 05`; operand = the source number",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x41fbf8",
+  "layout_tokens": [
+   2,
+   "S"
+  ],
+  "samples_seen": {
+   "sample29:Macro1": 2
+  },
+  "groupL": true
+ },
+ "T1:0xea": {
+  "name": "web",
+  "operands": "op n(1) S",
+  "qm_construct": "`web \"http://www.example.com\"` / `web \"Back\"`",
+  "evidence": "sample29 stmts 26/27 `ea 01 1e ..` (both forms same opcode, string operand differs)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x41e324",
+  "layout_tokens": [
+   2,
+   "S"
+  ],
+  "samples_seen": {
+   "sample29:Macro1": 2
+  },
+  "groupL": true
+ },
+ "T1:0xed": {
+  "name": "zip",
+  "operands": "op n(2) flag(0 zip | 1 zip-) S S",
+  "qm_construct": "`zip \"c:.zip\" \"c:.txt\"` / `zip- \"c:.zip\" \"c:\\out\"`",
+  "evidence": "sample29 stmts 28/29 `ed 02 00 S S`, `ed 02 01 S S`; the exe embeds the zip library as PE resource 11 when zip is used (MZ DLL, \"unzip 0.15 Copyright 1998 Gilles Vollant\")",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x41ee69",
+  "layout_tokens": [
+   3,
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample29:Macro1": 2
+  },
+  "groupL": true
+ },
+ "T1:0xeb": {
+  "name": "xm",
+  "operands": "op flag(0) n S [S|1b 00] [S]",
+  "qm_construct": "`a=xm(0 w)`",
+  "evidence": "sample29 stmt 7 `eb 00 02 1b 00 09 1f 00 00`; handler 0x421ff0 shared with 0xec: stores the flag byte and returns y if non-zero else x (flag 0 = x, 1 = y); source order agrees",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x421ff0",
+  "layout_tokens": [
+   2,
+   "X_LXM"
+  ],
+  "samples_seen": {
+   "sample29:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T1:0xec": {
+  "name": "ym",
+  "operands": "op flag(1) n S [S|1b 00] [S]",
+  "qm_construct": "`a=ym(0 w)`",
+  "evidence": "sample29 stmt 8 `ec 01 02 1b 00 09 1f 00 00`; handler 0x421ff0 stores the flag byte and returns y if non-zero else x (flag 1 = y); source order agrees",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x421ff0",
+  "layout_tokens": [
+   2,
+   "X_LXM"
+  ],
+  "samples_seen": {
+   "sample29:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T1:0xd6": {
+  "name": "rget",
+  "operands": "op b1(n | flags) b2 S(var) [b2==0xff: u32] S(name) S(key) ..",
+  "qm_construct": "`a=rget(v \"name\" \"Software\\QMTest\")`",
+  "evidence": "sample29 stmt 31 `d6 03 00 1f 04 00 1e 1e` (args in written order); handler 0x4221b2: 3 S for n=3, up to 6 slots",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4221b2",
+  "layout_tokens": [
+   3,
+   "X_LD6"
+  ],
+  "samples_seen": {
+   "sample29:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T1:0xd7": {
+  "name": "rset",
+  "operands": "op b1 b2 S(value) [u32] S(name) S(key) ..",
+  "qm_construct": "`a=rset(v \"name\" \"Software\\QMTest\")`",
+  "evidence": "sample29 stmt 32 `d7 03 00 09 1f 04 00 1e 1e`; handler 0x422470 (up to 5 S)",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x422470",
+  "layout_tokens": [
+   3,
+   "X_LD7"
+  ],
+  "samples_seen": {
+   "sample29:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T1:0xb3": {
+  "name": "inp",
+  "operands": "op flags n S(var) byte S S ..",
+  "qm_construct": "`a=inp(v \"text\" \"caption\")`",
+  "evidence": "sample29 stmt 33 `b3 00 03 1f 04 00 00 1e 1e`; handler 0x42037b: first S via 0x40ae1d, one filler byte (0 here), then up to 7 more slots (slot 5 / 7 skipped when flags & 2 / & 4); only n=3 observed",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42037b",
+  "layout_tokens": [
+   3,
+   "X_LB3"
+  ],
+  "samples_seen": {
+   "sample29:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T1:0xcf": {
+  "name": "qmitem",
+  "operands": "op 01 03 S",
+  "qm_construct": "`a=qmitem(\"Macro1\")`",
+  "evidence": "sample29 stmt 34 `cf 01 03 1e ..`; meaning of 01/03 unknown",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4234b2",
+  "layout_tokens": [
+   3,
+   "S"
+  ],
+  "samples_seen": {
+   "sample29:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T1:0xc7": {
+  "name": "net",
+  "operands": "op n S S S",
+  "qm_construct": "`a=net(\"127.0.0.1\" \"pw\" \"Macro1\")`",
+  "evidence": "sample29 stmt 35 `c7 03 S S S` (written order)",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42306a",
+  "layout_tokens": [
+   2,
+   "S",
+   "S",
+   "S"
+  ],
+  "samples_seen": {
+   "sample29:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x54": {
+  "name": "str method set_int",
+  "operands": "37 S(str var) sel(0x04) n S*n",
+  "qm_construct": "`t.set(65 0 1)` (int first arg)",
+  "evidence": "sample28 stmt 15 `37 1f 01 00 04 03 1b 41 1b 00 1b 01`; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x423a77",
+  "layout_tokens": [
+   1,
+   "X_CNTS"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x5d": {
+  "name": "str method geta",
+  "operands": "37 S(str var) sel(0x0d) flag(3) S S S",
+  "qm_construct": "`t.geta(s 1 1)`",
+  "evidence": "sample28 stmt 37 `37 1f 01 00 0d 03 1b 01 1b 01 0a 1f 00 00`; layout as get (0x5c) with flag byte 3; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4237e9",
+  "layout_tokens": [
+   2,
+   "X_G5C"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x61": {
+  "name": "str method fromn",
+  "operands": "37 S(str var) sel(0x11) n(pairs) S*2n",
+  "qm_construct": "`t.fromn(\"abc\" 3 \"def\" 3)`",
+  "evidence": "sample28 stmt 18 `37 1f 01 00 11 02 1e.. 1b 03 1e.. 1b 03`; handler 0x4239be loops 2*n; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4239be",
+  "layout_tokens": [
+   1,
+   "X_L61"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x62": {
+  "name": "str method set_str",
+  "operands": "37 S(str var) sel(0x12) n S*n",
+  "qm_construct": "`t.set(\"Q\" 1 1)` (string first arg)",
+  "evidence": "sample28 stmt 14 `37 1f 01 00 12 03 1e.. 1b 01 1b 01`; handler 0x423a47 -> 0x40ae38 (count + S); handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x423a47",
+  "layout_tokens": [
+   1,
+   "X_CNTS"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x63": {
+  "name": "str method insert",
+  "operands": "37 S(str var) sel(0x13) mode(0x69 `i`) n S*n",
+  "qm_construct": "`t.insert(\"ZZ\" 1)`",
+  "evidence": "sample28 stmt 3 `37 1f 01 00 13 69 02 1e.. 1b 01`; handler 0x423ac1 shared with 0x65: mode byte compared with 0x69, then format \"zii\" reader; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x423ac1",
+  "layout_tokens": [
+   2,
+   "X_LF:zii"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x64": {
+  "name": "str method remove",
+  "operands": "37 S(str var) sel(0x14) n S*n",
+  "qm_construct": "`t.remove(1 1)`",
+  "evidence": "sample28 stmt 4 `37 1f 01 00 14 02 1b 01 1b 01`; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x423b64",
+  "layout_tokens": [
+   1,
+   "X_CNTS"
+  ],
+  "samples_seen": {
+   "original-2:UserFnA": 1,
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x65": {
+  "name": "str method replace",
+  "operands": "37 S(str var) sel(0x15) mode(0x72 `r`) n S*n",
+  "qm_construct": "`t.replace(\"J\" 0 1)`",
+  "evidence": "sample28 stmt 6 `37 1f 01 00 15 72 03 1e.. 1b 00 1b 01`; same handler as 0x63, mode letter r; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x423ac1",
+  "layout_tokens": [
+   2,
+   "X_LF:zii"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x66": {
+  "name": "str method all",
+  "operands": "37 S(str var) sel(0x16) n(0|1) S*n",
+  "qm_construct": "`t.all(100)`, `t.all(-1)`, `t.all`",
+  "evidence": "sample28 stmts 23-25 `16 01 1b 64`, `16 01 19 ff ff ff ff`, `16 00`; handler 0x423bf8 -> 0x40ae38; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x423bf8",
+  "layout_tokens": [
+   1,
+   "X_CNTS"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 3
+  },
+  "groupL": true
+ },
+ "T2via37:0x78": {
+  "name": "str method unicode",
+  "operands": "37 S(str var) sel(0x28) n S*n",
+  "qm_construct": "`u.unicode(\"abc\")`",
+  "evidence": "sample28 stmt 29 `37 1f 02 00 28 01 1e ..`; handler 0x423fce format \"zii\"; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x423fce",
+  "layout_tokens": [
+   1,
+   "X_LF:zii"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x7a": {
+  "name": "str method escape",
+  "operands": "37 S(str var) sel(0x2a) n(0|1) S*n",
+  "qm_construct": "`t.escape` / `t.escape(1)`",
+  "evidence": "sample28 stmts 19/20 `2a 00`, `2a 01 1b 01`; handler 0x4240a7 tests the count byte then 0x40adcc; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4240a7",
+  "layout_tokens": [
+   2,
+   "X_N3"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 2
+  },
+  "groupL": true
+ },
+ "T2via37:0x7e": {
+  "name": "str method timeformat",
+  "operands": "37 S(str var) sel(0x2e) n S ..",
+  "qm_construct": "`t.timeformat(\"{D}\")`",
+  "evidence": "sample28 stmt 28 `37 1f 01 00 2e 01 1e ..`; handler 0x424342 (n>=2 has peek/typed sub-paths, unresolved); handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x424342",
+  "layout_tokens": [
+   1,
+   "X_L7E"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x80": {
+  "name": "str method findreplace",
+  "operands": "37 S(str var) sel(0x30) n S*n",
+  "qm_construct": "`n=s.findreplace(\"a\" \"b\")`",
+  "evidence": "sample28 stmt 26 `24 1f 03 00 37 1f 00 00 30 02 S S`; handler 0x423ba0 -> 0x40ae38; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x423ba0",
+  "layout_tokens": [
+   1,
+   "X_CNTS"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x81": {
+  "name": "str method replacerx",
+  "operands": "37 S(str var) sel(0x31) n(1..3) S*n",
+  "qm_construct": "`n=s.replacerx(\"b\" \"c\")`",
+  "evidence": "sample28 stmt 27 `.. 31 02 S S`; handler 0x4256bc: S, [n>=2 S], [n>=3 S]; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4256bc",
+  "layout_tokens": [
+   2,
+   "X_N3"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x82": {
+  "name": "str method gett",
+  "operands": "37 S(str var) sel(0x32) n u16(hidden local) S*n",
+  "qm_construct": "`n=s.gett(\"a b c\" 1)`",
+  "evidence": "sample28 stmt 17 `37 1f 00 00 32 02 05 00 1e.. 1b 01`; handler 0x4238ee format \"&iiii\" (0x40adb0 = u16 variable id = hidden local 5); handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4238ee",
+  "layout_tokens": [
+   1,
+   "X_LF:&iiii"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x83": {
+  "name": "str method getl",
+  "operands": "37 S(str var) sel(0x33) n u16(hidden local) S*n",
+  "qm_construct": "`n=s.getl(\"l1[]l2\" 1)`",
+  "evidence": "sample28 stmt 16 `37 1f 00 00 33 02 04 00 1e.. 1b 01`; handler 0x423940 format \"&iii\"; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x423940",
+  "layout_tokens": [
+   1,
+   "X_LF:&iii"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x84": {
+  "name": "str method beg",
+  "operands": "37 S(str var) sel(0x34) flags(0) n S*n",
+  "qm_construct": "`n=t.beg(\"he\")`",
+  "evidence": "sample28 stmt 8; handler 0x424444 (2.4.12) shared by 0x84-0x89: flags bit0 = case-insensitive, bit1 = end, bit2 = mid; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x424444",
+  "layout_tokens": [
+   3,
+   "X_84"
+  ],
+  "samples_seen": {
+   "original-2:UserFnA": 8,
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x85": {
+  "name": "str method begi",
+  "operands": "37 S(str var) sel(0x35) flags(1) n S*n",
+  "qm_construct": "`n=t.begi(\"HE\")`",
+  "evidence": "sample28 stmt 9 `.. 35 01 01 1e ..`; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x424444",
+  "layout_tokens": [
+   3,
+   "X_84"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x86": {
+  "name": "str method end",
+  "operands": "37 S(str var) sel(0x36) flags(2) n S*n",
+  "qm_construct": "`n=t.end(\"lo\")`",
+  "evidence": "sample28 stmt 10 `.. 36 02 01 ..`; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x424444",
+  "layout_tokens": [
+   3,
+   "X_84"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x87": {
+  "name": "str method endi",
+  "operands": "37 S(str var) sel(0x37) flags(3) n S*n",
+  "qm_construct": "`n=t.endi(\"LO\")`",
+  "evidence": "sample28 stmt 11 `.. 37 03 01 ..`; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x424444",
+  "layout_tokens": [
+   3,
+   "X_84"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x88": {
+  "name": "str method mid",
+  "operands": "37 S(str var) sel(0x38) flags(4) n(2) S S",
+  "qm_construct": "`n=t.mid(\"el\" 1)`",
+  "evidence": "sample28 stmt 12 `.. 38 04 02 S S`; flag bit2 -> second S; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x424444",
+  "layout_tokens": [
+   3,
+   "X_84"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x89": {
+  "name": "str method midi",
+  "operands": "37 S(str var) sel(0x39) flags(5) n(2) S S",
+  "qm_construct": "`n=t.midi(\"EL\" 1)`",
+  "evidence": "sample28 stmt 13 `.. 39 05 02 S S`; handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x424444",
+  "layout_tokens": [
+   3,
+   "X_84"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T2via37:0x8a": {
+  "name": "str method swap",
+  "operands": "37 S(str var) sel(0x3a) S",
+  "qm_construct": "`t.swap(u)`",
+  "evidence": "sample28 stmt 7 `37 1f 01 00 3a 1f 02 00`; handler 0x42421d -> 0x40ae1d (one S); handler via table-2 key 0x50+sel; layout derived from the helper (0x40ae38 count+S, 0x40af67 format reader, 0x424444 beg/end/mid)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42421d",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample28:Macro1": 1
+  },
+  "groupL": true
+ },
+ "T1:0xad#else_if_chain": {
+  "name": "if/else if/else chain",
+  "operands": "ad u16 S B1 | 98 u16 | ad u16 S B2 | 98 u16 | ad u16 S B3 | 98 u16 | Belse",
+  "qm_construct": "`if(a) .. else if(b) .. else if(c) .. else ..` (sample32 #51-#60)",
+  "evidence": "sample32 #51 `ad 35 00` (jump 53 = the 98), #53 `98 37 00` (target 55 = last statement of the NEXT link's body), #54 `ad 38 00` (jump 56 = that link's own 98, i.e. previous target+1), #56 `98 3a 00`, #57 `ad 3b 00`, #59 `98 3c 00`, #60 `out 4` = else body. Each true branch hops through the following 98 statements to the end of the chain. `else if(x)` and `else` + nested `if(x)` are bytewise identical (qmdec prints `else if`, inferred)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x420710 / 0x4206f0",
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample32:Macro1": 1
+  },
+  "groupM": true
+ },
+ "T1:0xae#else": {
+  "name": "ifk with else",
+  "operands": "op u16 01 letter flags S(arg) body | 98 u16 | else body",
+  "qm_construct": "`ifk ... else ...` (sample32 #77)",
+  "evidence": "sample32 #77 `ae .. ` followed by `98 u16` else-jump at #79: same shape as `ad`; u16 = index of the 98; qmdec prints `else` (previously stray 98 TODO)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x420a22",
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample32:Macro1": 1
+  },
+  "groupM": true
+ },
+ "T1:0xaf#else": {
+  "name": "iff with else",
+  "operands": "op u16 01 letter flags S(arg) body | 98 u16 | else body",
+  "qm_construct": "`iff ... else ...` (sample32 #73)",
+  "evidence": "sample32 #73 `af .. ` followed by `98 u16` else-jump at #75: same shape as `ad`; u16 = index of the 98; qmdec prints `else` (previously stray 98 TODO)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x420a22",
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample32:Macro1": 1
+  },
+  "groupM": true
+ },
+ "T1:0xb0#else": {
+  "name": "ifa with else",
+  "operands": "op u16 01 letter flags S(arg) body | 98 u16 | else body",
+  "qm_construct": "`ifa ... else ...` (sample32 #69)",
+  "evidence": "sample32 #69 `b0 .. ` followed by `98 u16` else-jump at #71: same shape as `ad`; u16 = index of the 98; qmdec prints `else` (previously stray 98 TODO)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x420a22",
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample32:Macro1": 1
+  },
+  "groupM": true
+ },
+ "T1:0x82#arg": {
+  "name": "atend with argument",
+  "operands": "82 flag(1) u16(function id) S(argument)",
+  "qm_construct": "`atend sub.AtEnd 7`",
+  "evidence": "sample31 #11 `82 01 a4 05 1b 07`: id 0x05a4 = 1444 = res2 id of `<00001>AtEnd`, S = `1b 07` = 7; handler 0x422730 evaluates one S when flag&0x7f (record {id16, flag, value} appended to the atend list); layout [4]+S via the existing 0x82 token (tiles)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x422730",
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample31:Macro1": 1
+  },
+  "groupM": true
+ },
+ "T1:0x38#a5_bstr_len": {
+  "name": "bstr_op a=5 (BSTR length)",
+  "operands": "38 a=05 b=00 S(BSTR local)",
+  "qm_construct": "`int n=b.len` on a BSTR local",
+  "evidence": "handler 0x414e67: [38][a][b] S, runtime type 0xf then switch on a: 1..5; case 5 = `cmp ptr,0; call [0x4603b4]` = OLEAUT32!SysStringLen (IAT name verified with pefile; 0x4603b8 = SysReAllocStringLen, 0x4603bc = SysAllocStringLen); sample33 #35 `24 1f 11 00 38 05 00 1f 10 00` = `int len2=b.len`; other a values (1 = bstr<-X conversion, 2 = VarBstrFromX 0x42a6cc, 3 = reallocate, 4 = free) handler-only",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x414e67",
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample33:Macro1": 1
+  },
+  "groupM": true
+ },
+ "T1:0x3f#0f_bstr": {
+  "name": "assign BSTR",
+  "operands": "3f 0f S(dest) S(string value)",
+  "qm_construct": "`BSTR b=\"bstr\"`",
+  "evidence": "sample33 #34 `3f 0f 1f 10 00 1e 50 00 00 00` (desc type 0x0f); handler 0x4140d7 type 0x0f -> 0x4142c8 -> helper 0x424906 dispatches the value S",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x415673",
+  "layout_tokens": [
+   2,
+   "S",
+   "OP3F"
+  ],
+  "samples_seen": {
+   "sample33:Macro1": 1
+  },
+  "groupM": true
+ },
+ "T1:0x12#on_0x21_str_len": {
+  "name": "member+ofs on a by-reference parameter",
+  "operands": "12 21 idx t1 t2 u16",
+  "qm_construct": "`ret sr.len` where `str&sr`",
+  "evidence": "sample31 <00001>StrRef #1 `d0 01 09 12 21 01 00 00 00 04 00 00`: base 0x21 (by-ref slot of descriptor type 4, flags 4), offset 4 = .len (as `s.len` = +4, sample11)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4120b0",
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample31:StrRef": 1
+  },
+  "groupM": true
+ },
+ "T1:0x12#on_arr_elem": {
+  "name": "member of an array element (ARRAY(POINT))",
+  "operands": "12 3b(elem S) t1 t2 u16",
+  "qm_construct": "`ap[1].y=6`",
+  "evidence": "sample33 #27 `24 12 3b 1f 0c 00 01 1b 01 14 00 00 00 04 00 1b 06`: 3b elem with tail word 0x14 (POINT), member offset 4 = second field (.y, POINT = {x,y} as in sample12); `ap[0].x=5` is the same store with the 12 wrapper omitted (#26 `24 3b ... 14 00 1b 05`, offset 0)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4120b0",
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample33:Macro1": 2
+  },
+  "groupM": true
+ },
+ "T1:0x3b#struct_elem_tail": {
+  "name": "arr_elem with struct tail word",
+  "operands": "3b S n idx type16(0x14 POINT / 0x15 RECT)",
+  "qm_construct": "element of ARRAY(POINT)",
+  "evidence": "sample33 #26/#27 tail word 0x0014 = descriptor type of POINT; the local descriptor of ARRAY has type 0x0d flags 1 and does not hold the element type, so the type name comes from this tail word",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": null,
+  "layout_tokens": [
+   1,
+   "S",
+   "X_3B"
+  ],
+  "samples_seen": {
+   "sample33:Macro1": 2
+  },
+  "groupM": true
+ },
+ "T1:0x3a#create_sel0": {
+  "name": "arr_op create with struct element",
+  "operands": "3a 01 01 S(array) 00 u16(8) S(count)",
+  "qm_construct": "`ARRAY(POINT) ap` + `ap.create(2)`",
+  "evidence": "sample33 #25 `3a 01 01 1f 0c 00 00 08 00 1b 02`: selector byte 0x00 followed by u16 0x0008 (= sizeof(POINT) 8: inferred, one occurrence), then the count argument; selectors seen: 0x03 int, 0xff str, 0x14 long, 0x24 Acc(+u16 0x0024), 0x00 struct(+u16 size)",
+  "confidence": "inferred",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4161ef",
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample33:Macro1": 1
+  },
+  "groupM": true
+ },
+ "T1:0x13#user_type_ofs0": {
+  "name": "member 0/0 of a user-type local",
+  "operands": "13 S(1f idx) 00 00",
+  "qm_construct": "`ut.x1` (first member) inside an expression",
+  "evidence": "sample33 #38 `09 13 1f 12 00 00 00` in `out ut.x1+ut.a2[2]`; descriptor type 0x10e (user type id); store form `ut.x1=3` = bare 0x24 on the local (sample30/33)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x412110",
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample33:Macro1": 1
+  },
+  "groupM": true
+ },
+ "T1:0x18#user_type_byte_array": {
+  "name": "array member element",
+  "operands": "18 S(member address) S(index) u16(stride 1)",
+  "qm_construct": "`ut.a2[2]` with `byte'a2[3]`",
+  "evidence": "sample33 #37 `26 18 12 1f 12 00 01 10 08 00 1b 02 01 00 1b 09` (byte store 0x26), #38 load via 0x0b; second source occurrence after sample30",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4122a0",
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample33:Macro1": 2
+  },
+  "groupM": true
+ },
+ "HDR:function_signature": {
+  "name": "function block header: parameters / return type",
+  "operands": "block+0x30 u16 = return type (0 int-or-none, 5 double); block+0x38 byte = number of parameters; block+0x39 byte = number of REQUIRED parameters; the first `params` local descriptors are the parameters in order; descriptor flags byte 4 = `str&` by-reference",
+  "qm_construct": "`function# a b` (2/2, ret 0), `function# a [b]` (2/1), `function^ a` (1/1, ret 5), `function# lpstr'p` (descriptor type 3), `function# lpstr'sFile str&sr` (types 3 and 4+flag 4), `function a` (1/1, ret 0)",
+  "evidence": "sample31: headers of <00001>Add/Opt/StrRef/Fact/Len/Half/AtEnd compared with the source signatures (all 7 agree); `#` (int) vs none cannot be told apart in the header (both 0)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": null,
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample31:7 functions": 7
+  },
+  "groupM": true
+ },
+ "T1:0x01#call_forms": {
+  "name": "user function call forms",
+  "operands": "01 .. u16(res2 id) args",
+  "qm_construct": "`sub.Add(3 4)`, `sub.Opt(5)` / `sub.Opt(5 6)`, recursion `sub.Fact(n-1)` inside Fact, `sub.StrRef(\"f\" &s)`, `sub.Len(ls)`, `double d=sub.Half(5)`",
+  "evidence": "sample31 Macro1 #0-#8 and Fact: the call carries only the arguments actually written (argc byte); optional parameters are not filled in by the caller; recursion uses the callee's own res2 id; by-reference args are `11 1f idx` (&s); a double return is stored with 0x29 (typed store) into a double local",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": null,
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample31:Macro1": 7
+  },
+  "groupM": true
+ },
+ "T1:0x49#dll_declarations": {
+  "name": "dll declaration + call",
+  "operands": "49 .. argc u16(id) args",
+  "qm_construct": "`dll user32 #MessageBeep uType` / `MessageBeep 0`, `dll user32 #GetCursorPos POINT*lpPoint` / `GetCursorPos &pt`, `dll user32 #FindWindow $lpClassName $lpWindowName` / `FindWindow(\"Notepad\" 0)`",
+  "evidence": "res8/res9 per exe (analysis/res9_tables.json): sample31 res8 = [user32], res9 = {80 GetCursorPos, 658 MessageBeep, 659 FindWindowA} (all dll_index 0, no 0x8000 flag; FindWindow is stored as FindWindowA); sample33 res8 = [\"\"], res9 = {648 CreateStringMap, 649 CreateCsv, 650 CreateXml}; sample32 has no res8/res9. Parameter types of a dll declaration are not stored in the exe",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x429650",
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample31:Macro1": 3,
+   "sample33:Macro1": 3
+  },
+  "groupM": true
+ },
+ "T1:0x9d#foreach_break_continue": {
+  "name": "break/continue inside foreach/for/rep",
+  "operands": "86 | 89 as statements",
+  "qm_construct": "`if(e=\"b\") continue` / `if(e=\"c\") break` in foreach; break/continue in for, for-step, rep N, rep",
+  "evidence": "sample32 #3 `89`, #5 `86`, #8 `86`, #16 `86`, #18 `89`, #22 `86`, #26 `89`, #28 `86`: the same one-byte opcodes in every loop kind (foreach 0x9d, for 0x9c/0x33, rep 0xd1)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": null,
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample32:Macro1": 8
+  },
+  "groupM": true
+ },
+ "T1:0x33#for_step": {
+  "name": "for with step",
+  "operands": "33 u16 flag(1) S S S S",
+  "qm_construct": "`for i 10 0 -2`, `for i 0 10 3`",
+  "evidence": "sample32 #9 (`33 0a 00 01 .. 19 fe ff ff ff` = -2), #11 (step 3)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": null,
+  "layout_tokens": [
+   "FOR"
+  ],
+  "samples_seen": {
+   "sample32:Macro1": 2
+  },
+  "groupM": true
+ },
+ "T1:0xd1#rep_count": {
+  "name": "rep N",
+  "operands": "d1 u16 flag(1) S(count)",
+  "qm_construct": "`rep 4`",
+  "evidence": "sample32 #13 `d1 12 00 01 1b 04` and `rep` (flag 0) #19",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": null,
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample32:Macro1": 2
+  },
+  "groupM": true
+ },
+ "T1:0xa9#goto_forms": {
+  "name": "goto forward / backward with label",
+  "operands": "a9 u16(target stream index - 1)",
+  "qm_construct": "`goto top` before the label and `if(n<30) goto top` after it",
+  "evidence": "sample32 #81 `a9 51 00` and #84 `a9 51 00`: both target stream 82 (the statement after `top`)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": null,
+  "layout_tokens": null,
+  "samples_seen": {
+   "sample32:Macro1": 2
+  },
+  "groupM": true
+ },
+ "T1:0x84": {
+  "name": "acctest",
+  "operands": "84 tb(0x83) S(&acc) S(name) S(role \"\") 1b 00",
+  "qm_construct": "`int r=acctest(a \"OK\")`",
+  "evidence": "sample35 #13 `84 83 11 1f 05 00 1e61 1e64 1b 00` (pool 0x61 = OK, 0x64 = empty implicit role); shares handler 0x419f7f with 0x83 (acc, sample35 #12 `83 03 S S S` = acc(\"OK\" \"PUSHBUTTON\" w)); layout X_83; tiling ok",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x419f7f",
+  "layout_tokens": [
+   2,
+   "X_83"
+  ],
+  "samples_seen": {
+   "sample35_funcs_misc:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0,
+  "groupN": true
+ },
+ "T1:0x8d": {
+  "name": "childtest",
+  "operands": "8d b S(hwnd if b&0x80) S*m (m=b&0x1f)",
+  "qm_construct": "`int ok=childtest(c \"Edit\" \"Edit\")`",
+  "evidence": "sample35 #2 `8d 82 09 1f 01 00 S S` (hwnd c + 2 strings); shares handler 0x428de6 with 0x8c child (X_J8C); tiling ok",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x428de6",
+  "layout_tokens": [
+   2,
+   "X_J8C"
+  ],
+  "samples_seen": {
+   "sample35_funcs_misc:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0,
+  "groupN": true
+ },
+ "T1:0xa1": {
+  "name": "findcr",
+  "operands": "a1 flags S(str) S(char or string) [S if flags&1]",
+  "qm_construct": "`n=findcr(s ':')` / `findcr(s \"/\")`",
+  "evidence": "sample35 #4/#5: flags 2 = char arg (`1b 3a` = ':'), flags 6 = string arg (bit2); bit1 = reverse; shares handler 0x4252ca with 0xa0 findc (X_JA0); tiling ok",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4252ca",
+  "layout_tokens": [
+   2,
+   "X_JA0"
+  ],
+  "samples_seen": {
+   "sample35_funcs_misc:Macro1": 2
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0,
+  "groupN": true
+ },
+ "T1:0xa2": {
+  "name": "findcs",
+  "operands": "a2 n flag(0) S*n (charset [from]) S(str)",
+  "qm_construct": "`findcs(s \":/\" 1)`, `findcs(s \":/\")`",
+  "evidence": "sample35 #6/#7: `a2 02 00 \":/\" 1 s`, `a2 01 00 \":/\" s` (coded: charset, [from], then the string; written: string first); handler 0x4253a3 -> 0x40af07; flag byte 0 (a3 has 1); tiling ok",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4253a3",
+  "layout_tokens": [
+   3,
+   "X_NA2"
+  ],
+  "samples_seen": {
+   "sample35_funcs_misc:Macro1": 2
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0,
+  "groupN": true
+ },
+ "T1:0xa3": {
+  "name": "findcn",
+  "operands": "a3 n flag(1) S*n (charset [from]) S(str)",
+  "qm_construct": "`findcn(s \" \")`, `findcn(s \":/ \")`",
+  "evidence": "sample35 #8/#9: `a3 01 01 \" \" s`; same handler 0x4253a3 as 0xa2, flag byte 1; tiling ok",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4253a3",
+  "layout_tokens": [
+   3,
+   "X_NA2"
+  ],
+  "samples_seen": {
+   "sample35_funcs_misc:Macro1": 2
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0,
+  "groupN": true
+ },
+ "T1:0xac": {
+  "name": "htm",
+  "operands": "ac n S*n",
+  "qm_construct": "`IDispatch h=htm(\"A\" \"x\")`",
+  "evidence": "sample35 #14 `3e 1f 07 00 ac 02 S S` (local type 0x09 = IDispatch, flag 0x40); handler 0x41e4ed; only n=2 observed (X_NAC raises otherwise)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x41e4ed",
+  "layout_tokens": [
+   2,
+   "X_NAC"
+  ],
+  "samples_seen": {
+   "sample35_funcs_misc:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0,
+  "groupN": true
+ },
+ "T1:0xb6": {
+  "name": "inpp",
+  "operands": "b6 n S*n (password, text, caption, flags, owner)",
+  "qm_construct": "`inpp \"pw\" \"text\" \"caption\"` (statement) and `int rp=inpp(\"pw\" \"text\")`",
+  "evidence": "sample35 #15 `b6 03 S S S`, #16 `b6 02 S S`; handler 0x420532 (n>1 text, n>2 caption, n>3 flags, n>4 owner); n=2,3 observed",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x420532",
+  "layout_tokens": [
+   2,
+   "X_NB6"
+  ],
+  "samples_seen": {
+   "sample35_funcs_misc:Macro1": 2
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0,
+  "groupN": true
+ },
+ "T1:0xd2": {
+  "name": "ren",
+  "operands": "d2 b1(1) b2(2) b3(0 | '*'=0x2a) S(from) S(to)",
+  "qm_construct": "`ren \"c:\u0007.txt\" \"c:\b.txt\"`, `ren* \"c:\u0007.txt\" \"b.txt\"`",
+  "evidence": "sample35 #10/#11 `d2 01 02 00 S S`, `d2 01 02 2a S S`; shares handler 0x41f806 with 0x8b cop (X_I8B); b3 is the option character",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x41f806",
+  "layout_tokens": [
+   4,
+   "X_I8B"
+  ],
+  "samples_seen": {
+   "sample35_funcs_misc:Macro1": 2
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0,
+  "groupN": true
+ },
+ "T1:0xdf": {
+  "name": "scan",
+  "operands": "df n S(image) [1b 00 | S window if n>=2]",
+  "qm_construct": "`n=scan(\"c:\\x.bmp\")`, `n=scan(\"c:\\x.bmp\" w)`",
+  "evidence": "sample35 #17/#18 `df 01 S`, `df 02 S S`; handler 0x421fa8; n>=3 handler-only (X_NDF raises)",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x421fa8",
+  "layout_tokens": [
+   2,
+   "X_NDF"
+  ],
+  "samples_seen": {
+   "sample35_funcs_misc:Macro1": 2
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0,
+  "groupN": true
+ },
+ "T1:0x16": {
+  "name": "ptr_index",
+  "operands": "16 S(pointer variable) S(index) u16 stride",
+  "qm_construct": "pointer indexing `p[i]` / `pb[i]` / `pw[i]`",
+  "evidence": "handler 0x4121b0: S#1 = address of a pointer variable, S#2 = index, ctx+0x14 = *ptr + index*u16 (stride), null pointer -> error 0x23c. OBSERVED sample34: `int k=p[0]` = `24 1f 08 00 09 16 1f 07 00 1b 00 04 00` (stride 4, int*), `k=pb[0]` = `0b 16 1f 0a 00 1b 00 01 00` (stride 1, byte*), `k=pw[0]` = `0c 16 1f 0c 00 1b 00 02 00` (stride 2, word*); the outer 0x09/0x0b/0x0c is the typed load. Only index 0 occurs in the sample.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4121b0",
+  "layout_tokens": [
+   1,
+   "S",
+   "S",
+   2
+  ],
+  "samples_seen": {
+   "sample34_scopes_variants:Macro1": 3
+  },
+  "macro1_occurrences": 3,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x40": {
+  "name": "variant_to_int",
+  "operands": "40 S",
+  "qm_construct": "implicit conversion of a VARIANT operand to int (`int iv=v`, and around `!v`)",
+  "evidence": "handler 0x413945: VARIANT (type 0x13) payload / VariantChangeTypeEx(VT_I4) -> int. OBSERVED sample34 `int iv=v` = `24 1f 0e 00 40 1f 0d 00` and `int nv=!v` = `24 1f 10 00 40 46 1f 0d 00` (0x40 wraps the 0x46 result). Not written in the source: the decompiler prints only the operand.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x413945",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample34_scopes_variants:Macro1": 2
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x42": {
+  "name": "variant_to_double",
+  "operands": "42 S",
+  "qm_construct": "implicit conversion of a VARIANT operand to double (`double dv=v`)",
+  "evidence": "handler 0x413be0 (VariantChangeTypeEx VT_R8). OBSERVED sample34 `double dv=v` = `29 1f 0f 00 42 1f 0d 00` (typed double store 0x29 + 0x42).",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x413be0",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample34_scopes_variants:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x44": {
+  "name": "neg_variant",
+  "operands": "44 S",
+  "qm_construct": "unary minus on a VARIANT (`v=-v`)",
+  "evidence": "handler 0x4136eb (negate VARIANT / float / decimal / currency). OBSERVED sample34 `v=-v` = `3f 13 1f 0d 00 44 1f 0d 00 0c 00` (0x3f typed VARIANT assignment, trailing word 0x0c = VT_VARIANT source type).",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4136eb",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample34_scopes_variants:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x45": {
+  "name": "not_variant",
+  "operands": "45 S",
+  "qm_construct": "bitwise NOT on a VARIANT (`v=~v`)",
+  "evidence": "handler 0x413770. OBSERVED sample34 `v=~v` = `3f 13 1f 0d 00 45 1f 0d 00 0c 00`.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x413770",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample34_scopes_variants:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x46": {
+  "name": "lnot_variant",
+  "operands": "46 S",
+  "qm_construct": "logical NOT on a VARIANT (`int nv=!v`)",
+  "evidence": "handler 0x4137ab (0/1 result, type int). OBSERVED sample34 `int nv=!v` = `24 1f 10 00 40 46 1f 0d 00`.",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x4137ab",
+  "layout_tokens": [
+   1,
+   "S"
+  ],
+  "samples_seen": {
+   "sample34_scopes_variants:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x4e": {
+  "name": "parent_var",
+  "operands": "4e idx16",
+  "qm_construct": "variable of the PARENT frame of a `#sub Name v` sub-function (`ret pv+n`, pv = local of the caller)",
+  "evidence": "handler 0x412630: u16 idx; frame = 0x422113 (walks the caller chain ctx+0x44 until [[ctx+0x38]+0x24]==[[ctx+0x38]+0x26]); address = frame base + parent descriptor[idx*8]; type/flags from that descriptor. OBSERVED sample34 `#sub UseParent v` / `ret pv+n` = `d0 01 03 0b 00 09 4e 03 00 01 09 1f 00 00 00 00` (idx 3 = descriptor index of `pv` in Macro1). The deref variant is 0x4f (0x412690, not seen); 0x4c/0x4d (0x412590/0x412610, extra u16 parent function id, not seen). The parent variable's NAME is not stored (neutral parent_loc<idx>).",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x412630",
+  "layout_tokens": [
+   3
+  ],
+  "samples_seen": {
+   "sample34_scopes_variants:Macro1": 1
+  },
+  "macro1_occurrences": 1,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x50": {
+  "name": "thread_var_decl",
+  "operands": "50 idx16",
+  "qm_construct": "thread variable declaration with initialiser: `int- t_i=5`, `int-- t_k=2`",
+  "evidence": "handler 0x40f3fd: ip+=3, u16 idx = record in the 12-byte thread-variable table [func info +0x20] (block header ptr8..ptr5), call 0x40f260 (thread table lookup/creation by NAME = pool string at record+0); returns 1 only the first time -> the next statement (the initialiser store) runs, otherwise it is skipped (ctx[0x1c]++). OBSERVED sample34: `int- t_i=5` = `50 00 00` + `24 21 00 00 1b 05`; `int-- t_k=2` = `50 02 00` + `24 21 02 00 1b 02`; `int- t_j` (no initialiser) emits NO statement. Record {u32 name offset, u16 size, u8,u8, u16 descriptor index, u16 flags}: flags bit1 = `--`, bit0 = initialiser present (t_i 1, t_j 0, t_k 3); the thread variable is accessed through its by-reference slot (0x21 + descriptor idx; descriptor flag byte 4). NAMES ARE STORED (pool strings t_i t_j t_k).",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x40f3fd",
+  "layout_tokens": [
+   3
+  ],
+  "samples_seen": {
+   "sample34_scopes_variants:Macro1": 2
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0
+ },
+ "T1:0x8e": {
+  "name": "call_addr",
+  "operands": "8e n S(function) n x S(args)",
+  "qm_construct": "`call(address arg...)` with a function id / name / `&sub.X`",
+  "evidence": "handler 0x42325d (2.4.2 0x422ff4): n = code[+1], S = function (id < 0x10000 -> id table, string -> by name), then 0x4292f8 evaluates n argument operands and calls. OBSERVED sample34 `r=call(&sub.Foo 5)` = `24 1f 04 00 8e 01 54 a3 05 1b 05` and `r=call(\"Foo\" 1)` = `8e 01 1e 10 00 00 00 1b 01`; layout [2, X_O8E] tiles both (n=1 only seen).",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x42325d",
+  "layout_tokens": [
+   2,
+   "X_O8E"
+  ],
+  "samples_seen": {
+   "sample34_scopes_variants:Macro1": 2
+  },
+  "macro1_occurrences": 2,
+  "stdlib_occurrences": 0
+ },
+ "T1:0xaa": {
+  "name": "getopt",
+  "operands": "aa n opt [S(context) if n>1]",
+  "qm_construct": "`getopt(option [context])`",
+  "evidence": "handler 0x422a21: n=code[+1] (1 = no context), opt=code[+2]; n>1 -> one more S. OBSERVED sample34 (n=1): `lpstr gname=getopt(itemname)` = `25 1f 12 00 aa 01 04`; `r=getopt(speed)` = `aa 01 02`; `r=getopt(nargs)` = `aa 01 05` (option codes itemname=4, speed=2, nargs=5; other option codes unmapped; the n>1 context S is handler-only).",
+  "confidence": "observed",
+  "source_correlated": true,
+  "handler_va_2.4.12": "0x422a21",
+  "layout_tokens": [
+   3,
+   [
+    "IFGT",
+    1,
+    1,
+    [
+     "S"
+    ],
+    []
+   ]
+  ],
+  "samples_seen": {
+   "sample34_scopes_variants:Macro1": 3
+  },
+  "macro1_occurrences": 3,
+  "stdlib_occurrences": 0
+ }
+}
