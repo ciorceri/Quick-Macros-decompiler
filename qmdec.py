@@ -528,6 +528,9 @@ SYSTEM_QML = (
 ROUNDTRIP = False
 # --guess-names: cosmetic names from type/usage, each marked /*guessed name*/
 GUESS_NAMES = False
+# --annotate: keep the evidence notes (trailing `;;note`) on each line;
+# without it only TODO(evidence ...) and guessed-name notes are kept
+ANNOTATE = False
 NAME_MARK = "/*name from System.qml (2.4.12 source, inferred)*/"
 _SYSQ = {}
 
@@ -4591,11 +4594,32 @@ HEADER = (
     "// qmdec output for {src}\n"
     "// Local-variable names are NOT stored in the exe: neutral names loc<i> "
     "(i = descriptor index) are used.\n"
+    "// `TODO(evidence ...)` = no validated semantics / layout for that "
+    "opcode, nothing guessed. Run with --annotate for per-line evidence "
+    "notes."
+)
+HEADER_ANNOTATED = (
+    "// qmdec output for {src}\n"
+    "// Local-variable names are NOT stored in the exe: neutral names loc<i> "
+    "(i = descriptor index) are used.\n"
     "// Annotations are trailing `;;` comments (QM syntax): `;;inferred` = "
     "semantics inferred only (handler/correlation, not observed);\n"
     "// `TODO(evidence ...)` = no validated semantics / layout for that "
     "opcode, nothing guessed."
 )
+
+
+def _keep_note(note: str) -> bool:
+    """Tells whether a note survives when --annotate is off.
+
+    Args:
+        note: One decompiler note.
+
+    Returns:
+        True for notes the reader must see: undecoded statements (TODO) and
+        guessed names.
+    """
+    return ANNOTATE or "TODO" in note or "guessed name" in note
 
 
 def finalize_comments(lines: list[str]) -> list[str]:
@@ -4640,7 +4664,7 @@ def finalize_comments(lines: list[str]) -> list[str]:
             elif ln.startswith("/*", i) and ln.find("*/", i + 2) >= 0:
                 j = ln.find("*/", i + 2)
                 n = " ".join(ln[i + 2 : j].split()).replace(";;", ";")
-                if n:
+                if n and _keep_note(n):
                     notes.append(n)
                 while (
                     buf
@@ -4693,10 +4717,20 @@ def main() -> int:
             "System.qml when it is compiled"
         ),
     )
+    ap.add_argument(
+        "--annotate",
+        action="store_true",
+        help=(
+            "keep the per-line evidence notes (`;;inferred: ...`, name "
+            "sources); default: only TODO and guessed-name notes. "
+            "Implied by --roundtrip"
+        ),
+    )
     a = ap.parse_args()
-    global GUESS_NAMES, ROUNDTRIP
+    global GUESS_NAMES, ROUNDTRIP, ANNOTATE
     GUESS_NAMES = a.guess_names
     ROUNDTRIP = a.roundtrip
+    ANNOTATE = a.annotate or a.roundtrip
     if a.target.is_dir() and list(a.target.glob("*.exe")):
         # batch: every exe in the directory -> <output dir>/<name>.qmdec.qml
         od = a.output or a.target
@@ -4712,11 +4746,16 @@ def main() -> int:
                 + (["--guess-names"] if GUESS_NAMES else [])
                 + (["--roundtrip"] if ROUNDTRIP else [])
                 + (["--with-library"] if a.with_library else [])
+                + (["--annotate"] if a.annotate else [])
             )
             main()
         return 0
     funcs = decompile(a.target)
-    lines = HEADER.format(src=a.target.name).split("\n")
+    lines = (
+        (HEADER_ANNOTATED if ANNOTATE else HEADER)
+        .format(src=a.target.name)
+        .split("\n")
+    )
     nst = {"ok": 0, "inferred": 0, "partial": 0, "todo": 0}
     ust = dict(
         nst
@@ -4781,13 +4820,21 @@ def main() -> int:
         if not l.lstrip().startswith("//")
     ):
         lines.insert(
-            len(HEADER.format(src=a.target.name).split("\n")),
+            len(
+                (HEADER_ANNOTATED if ANNOTATE else HEADER)
+                .format(src=a.target.name)
+                .split("\n")
+            ),
             "// NOTE: `type MYT ...` declarations (user type names and member "
             "names) are not stored in the exe; "
             "type_<id> / member names are neutral and the declaration itself "
             "cannot be recovered.",
         )
-    hl = len(HEADER.format(src=a.target.name).split("\n"))
+    hl = len(
+        (HEADER_ANNOTATED if ANNOTATE else HEADER)
+        .format(src=a.target.name)
+        .split("\n")
+    )
     if (
         GLOBALS_USED
         # GROUP O: hidden globals (res10) referenced by the code; declared once,
@@ -4818,7 +4865,7 @@ def main() -> int:
             "names (string pool, referenced from the 12-byte thread-variable "
             "record).",
         )
-    if any(NAME_MARK in l for l in lines):
+    if ANNOTATE and any(NAME_MARK in l for l in lines):
         lines.insert(
             hl,
             "// NOTE: names marked `"

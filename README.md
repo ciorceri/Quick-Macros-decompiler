@@ -79,8 +79,10 @@ With the 35 public samples the author obtained: tiling ok 1103 / bad 0 / unresol
 
 Decompiler output is valid QM syntax:
 
-* `;;` trailing notes carry the evidence level of a statement, e.g. `;;inferred: ...`; whole-line notes start with `;`. A line
-  `; TODO(evidence ...)` means the statement could not be decoded and nothing was guessed; the raw bytes are in the note.
+* The code is clean by default. A line `; TODO(evidence ...)` (or a trailing `;;TODO(evidence ...)`) means the statement could
+  not be decoded and nothing was guessed; the raw bytes are in the note.
+* `--annotate` adds the evidence level of every statement as a trailing `;;` note, e.g. `;;inferred: ...`, and the source of
+  names taken from `System.qml`. Whole-line notes start with `;`. `--roundtrip` implies `--annotate`.
 * **Thread-variable names are real** (they are stored in the exe). **All other names are placeholders**: locals and parameters
   `loc<i>`, globals `glob<id>`, user types `type_<id>`; labels, comments and formatting are lost. Function and `#sub` names are real.
 * Builtin DLL/runtime calls are named from the exe's own resource tables.
