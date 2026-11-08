@@ -104,6 +104,12 @@ only, no code) is used. While decompiling, `qmdec.py` prints on stderr every fun
 `QM_SYSTEM_QML` or in the built-in list). If one of them is your own function with the same name, run again with
 `--with-library`.
 
+**Corner case: a user function named like a library function.** The exe does not say whether a function came from
+`System.qml` or from your own file, so `qmdec.py` decides by name only. If you wrote a function called, for example,
+`Replace` or `init`, it is treated as the library one and left out of the output, and the decompiled macro then calls a
+function that does not exist in your QM file. Read the stderr message after decompiling; if your function is on the list,
+run `qmdec.py ... --with-library` and create that function in QM from the section it writes.
+
 Note on compiling: QM compiles one item per text, and `function` must be the first code line of an item (only comments
 may precede it). A file holding several functions therefore compiles only if each extra function is a `#sub name` section
 or is created as its own QM item.

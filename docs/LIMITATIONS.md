@@ -25,6 +25,14 @@ resolves them from `System.qml` when compiled), `--with-library` keeps them. Wit
 a user function with one of these names is omitted by mistake. `qmdec.py` lists every omitted function and the reason on
 stderr; `--with-library` keeps them.
 
+**Corner case: a user function with a library name.** An exe stores no marker that tells a copy of a `System.qml` function
+from a function of your own file; the only evidence is the name. A user function named like a `System.qml` function (for
+example `init`, `Replace`, `Outp`) is therefore omitted as if it were the library one, and the decompiled macro calls a
+function that is missing from the output. The omitted names are printed on stderr, with the reason (found in
+`QM_SYSTEM_QML` or in the built-in list `library_names.py`). If your own function is among them, decompile again with
+`--with-library` and create that function in QM from the section the tool writes. The two cannot be distinguished
+automatically, even with `QM_SYSTEM_QML`, unless the function body is compared with the `System.qml` text (not done).
+
 ## Commands that are rejected when compiling an exe
 
 QM refuses to compile some commands into an exe ("cannot be used in exe"): `dis`, `deb`, `newitem` (and

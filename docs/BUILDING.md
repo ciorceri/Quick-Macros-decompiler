@@ -34,6 +34,9 @@ text has to be pasted into a QM item.
   `System.qml`. `--with-library` writes them anyway; if you need them (for example without `QM_SYSTEM_QML`, when they
   cannot be told apart from your own functions), create each as a separate **function** item with exactly that name, or
   append it to the macro as a `#sub`.
+* **Corner case:** if one of your own functions has the same name as a `System.qml` function, `qmdec.py` omits it as a
+  library function (the exe cannot tell them apart). The omitted names are printed on stderr while decompiling; decompile
+  again with `--with-library` and create that function as its own item. See "Corner case" in `LIMITATIONS.md`.
 * **Your own functions** called by the macro (items that are not in `System.qml`) are separate QM functions: create one
   function item per `; ---- function <name>` section, named exactly like the section.
 
