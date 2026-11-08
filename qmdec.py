@@ -38,6 +38,7 @@ import struct
 import sys
 from typing import Any
 
+import library_names
 import qmdis
 import qmlayout
 import qmtool
@@ -524,11 +525,9 @@ SYSTEM_QML = (
     else Path("__no_system_qml__")
 )
 # Functions of QM's System.qml that Make Exe embeds in exes; used to recognise
-# library copies when QM_SYSTEM_QML is not set (names seen in the corpus).
+# library copies when QM_SYSTEM_QML is not set (names only, library_names.py).
 # A user function with one of these names is wrongly omitted: --with-library.
-KNOWN_LIBRARY_FUNCTIONS = frozenset(
-    {"GetWinStyle", "ShutDownProcess", "TriggerWindow"}
-)
+KNOWN_LIBRARY_FUNCTIONS = library_names.LIBRARY_FUNCTION_NAMES
 # --roundtrip: every local declared WITHOUT initialiser at the function head in
 # descriptor order (QM numbers descriptors in declaration order)
 ROUNDTRIP = False
@@ -4772,20 +4771,35 @@ def main() -> int:
     # Functions that are copies of System.qml items (QM Make Exe embeds the
     # library functions the macro calls). Detected from QM_SYSTEM_QML or the built-in name list.
     library_ids = set()
+    library_why: dict[str, str] = {}
     if not (a.with_library or ROUNDTRIP):
         for nm, rec, _b, _s in funcs:
             if rec["kind"] == 2 and not nm.startswith("<"):
-                if (
-                    _sysq_source(nm) is not None
-                    or nm in KNOWN_LIBRARY_FUNCTIONS
-                ):
+                if _sysq_source(nm) is not None:
                     library_ids.add(rec["id"])
+                    library_why[nm] = "found in QM_SYSTEM_QML"
+                elif nm in KNOWN_LIBRARY_FUNCTIONS:
+                    library_ids.add(rec["id"])
+                    library_why[nm] = "name is in the built-in list"
         for nm, rec, _b, _s in funcs:
             m = re.match(r"<(\d+)>", nm)
             if m and int(m.group(1)) in library_ids:
                 library_ids.add(rec["id"])
     omitted = [nm for nm, rec, _b, _s in funcs if rec["id"] in library_ids]
     if omitted:
+        print(
+            "qmdec: omitted from the output (System.qml library functions, "
+            "resolved by QM when compiling):",
+            file=sys.stderr,
+        )
+        for nm in omitted:
+            why = library_why.get(nm, "sub-function of an omitted function")
+            print(f"qmdec:   {nm}  ({why})", file=sys.stderr)
+        print(
+            "qmdec: if one of these is YOUR OWN function with the same "
+            "name, run again with --with-library",
+            file=sys.stderr,
+        )
         lines.append(
             "// Omitted (copies of QM System.qml items, resolved from "
             "System.qml when compiling; use --with-library to write them): "

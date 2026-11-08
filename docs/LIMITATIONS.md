@@ -21,8 +21,9 @@ parameter/local names for the embedded standard-library functions by strict alig
 Those names are marked `/*name from System.qml (...)*/` and are inferred. Nothing from that file is shipped here.
 It matches QM 2.4.12; for a 2.4.2 exe it is only a weak hint.
 The same file is used to recognise the embedded library functions: by default they are omitted from the output (the macro
-resolves them from `System.qml` when compiled), `--with-library` keeps them. Without it only the built-in name list (`KNOWN_LIBRARY_FUNCTIONS` in `qmdec.py`: `GetWinStyle`, `ShutDownProcess`,
-`TriggerWindow`) is used; a user function with one of these names would be omitted by mistake (`--with-library`).
+resolves them from `System.qml` when compiled), `--with-library` keeps them. Without it the built-in name list `library_names.py` (530 function names of QM 2.4.12's `System.qml`, names only) is used;
+a user function with one of these names is omitted by mistake. `qmdec.py` lists every omitted function and the reason on
+stderr; `--with-library` keeps them.
 
 ## Commands that are rejected when compiling an exe
 
