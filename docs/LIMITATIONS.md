@@ -20,6 +20,8 @@ Optional: if you own QM, set `QM_SYSTEM_QML` to your installation's `System.qml`
 parameter/local names for the embedded standard-library functions by strict alignment (equal count and types).
 Those names are marked `/*name from System.qml (...)*/` and are inferred. Nothing from that file is shipped here.
 It matches QM 2.4.12; for a 2.4.2 exe it is only a weak hint.
+The same file is used to recognise the embedded library functions: by default they are omitted from the output (the macro
+resolves them from `System.qml` when compiled), `--with-library` keeps them. Without `QM_SYSTEM_QML` nothing is omitted.
 
 ## Commands that are rejected when compiling an exe
 

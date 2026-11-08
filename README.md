@@ -85,6 +85,18 @@ Decompiler output is valid QM syntax:
   `loc<i>`, globals `glob<id>`, user types `type_<id>`; labels, comments and formatting are lost. Function and `#sub` names are real.
 * Builtin DLL/runtime calls are named from the exe's own resource tables.
 
+### One item, one file
+
+`qmdec.py` writes the main macro plus any `#sub` sections of its own. A QM exe also embeds copies of the standard-library
+functions the macro calls (items of `System.qml`, e.g. `ShutDownProcess`). They are not part of your script: the macro
+resolves them from `System.qml` when it is compiled, so importing them as items is unnecessary. With `QM_SYSTEM_QML` set,
+these functions are left out by default and a `; Omitted ...` line lists them; `--with-library` writes them as well.
+Without `QM_SYSTEM_QML` they cannot be told apart from your own functions, so everything is written.
+
+Note on compiling: QM compiles one item per text, and `function` must be the first code line of an item (only comments
+may precede it). A file holding several functions therefore compiles only if each extra function is a `#sub name` section
+or is created as its own QM item.
+
 ## Round trip
 
 1. `python make_roundtrip.py` decompiles every sample exe of the corpus in `--roundtrip` mode (every local declared at the

@@ -22,15 +22,23 @@ Usage:
 Static, read-only. Handler bytes are read from the PE image (same initialized
 bytes REA's read_bytes returns; spot-compared in research-log.md).
 """
+
+from __future__ import annotations
+
 import argparse
+from collections import Counter
 import json
 import struct
 import sys
-from collections import Counter
+from typing import Any
 
+from capstone import Cs
+from capstone import CS_ARCH_X86
+from capstone import CS_MODE_32
+from capstone.x86 import X86_OP_IMM
+from capstone.x86 import X86_OP_MEM
+from capstone.x86 import X86_OP_REG
 import pefile
-from capstone import CS_ARCH_X86, CS_MODE_32, Cs
-from capstone.x86 import X86_OP_IMM, X86_OP_MEM, X86_OP_REG
 
 MAXPATHS = 24
 MAXINSNS = 220
@@ -39,16 +47,40 @@ _RUN_CACHE = {}
 
 
 class Image:
-    def __init__(self, path):
+    """A PE image providing byte reads by virtual address."""
+
+    def __init__(self, path: str) -> None:
+        """Loads a PE file and records its image base and raw bytes.
+
+        Args:
+          path: Path of the PE file to open.
+        """
         self.pe = pefile.PE(path)
         self.base = self.pe.OPTIONAL_HEADER.ImageBase
         self.data = open(path, "rb").read()
 
-    def read(self, va, n):
-        off = self.pe.get_offset_from_rva(va - self.base)
-        return self.data[off:off + n]
+    def read(self, va: int, n: int) -> bytes:
+        """Reads n bytes at virtual address va.
 
-    def u32(self, va):
+        Args:
+          va: Virtual address to read from.
+          n: Number of bytes requested.
+
+        Returns:
+          The bytes found at that address in the file image.
+        """
+        off = self.pe.get_offset_from_rva(va - self.base)
+        return self.data[off : off + n]
+
+    def u32(self, va: int) -> int:
+        """Reads a little-endian u32 at va.
+
+        Args:
+          va: Virtual address to read from.
+
+        Returns:
+          The unsigned 32-bit value.
+        """
         return struct.unpack("<I", self.read(va, 4))[0]
 
 
@@ -56,14 +88,33 @@ md = Cs(CS_ARCH_X86, CS_MODE_32)
 md.detail = True
 
 
-def disasm(img, va, n=1200):
+def disasm(img: Image, va: int, n: int = 1200) -> list[Any]:
+    """Disassembles n bytes of img at va.
+
+    Args:
+      img: The image to read from.
+      va: Virtual address of the first byte.
+      n: Number of bytes to disassemble.
+
+    Returns:
+      The capstone instructions decoded from those bytes.
+    """
     return list(md.disasm(img.read(va, n), va))
 
 
 class Fn:
     """Decoded instructions of one function (by address), recursive descent."""
 
-    def __init__(self, img, va):
+    def __init__(self, img: Image, va: int) -> None:
+        """Decodes the function reachable from va into self.ins.
+
+        Follows fall-through and nearby direct jumps (within 0x2000 bytes of
+        va), stopping at ret/int3/jmp or after 4000 instructions.
+
+        Args:
+          img: The image to read from.
+          va: Virtual address of the function entry.
+        """
         self.ins = {}
         todo = [va]
         while todo and len(self.ins) < 4000:
@@ -87,8 +138,16 @@ class Fn:
                 a += i.size
 
 
-def find_ip_offsets(img, handlers):
-    """IP field = most common `inc dword [r+K]`; returns (IP, CODE)."""
+def find_ip_offsets(img: Image, handlers: list[int]) -> list[tuple[int, int]]:
+    """IP field = most common `inc dword [r+K]`; returns (IP, CODE).
+
+    Args:
+      img: The image to read from.
+      handlers: Virtual addresses of the opcode handlers to scan.
+
+    Returns:
+      Up to three (displacement, count) pairs, most common first.
+    """
     c = Counter()
     for va in handlers:
         for i in Fn(img, va).ins.values():
@@ -98,12 +157,44 @@ def find_ip_offsets(img, handlers):
 
 
 # ---------------------------------------------------------------- abstract run
-def reg_name(i, op):
+def reg_name(i: Any, op: Any) -> str:
+    """Returns the register name of operand op.
+
+    Args:
+      i: The capstone instruction owning the operand.
+      op: A register operand of i.
+
+    Returns:
+      The register name.
+    """
     return i.reg_name(op.reg)
 
 
-def run(img, va, ipoff, codeoff, table, inline_depth=1, entry_ctx="ecx"):
-    """Return list of paths; each path is a list of event strings."""
+def run(
+    img: Image,
+    va: int,
+    ipoff: int,
+    codeoff: int,
+    table: tuple[int, ...],
+    inline_depth: int = 1,
+    entry_ctx: str = "ecx",
+) -> list[list[str]]:
+    """Return list of paths; each path is a list of event strings.
+
+    Results are cached per (img, va, ipoff, inline_depth).
+
+    Args:
+      img: The image to read from.
+      va: Virtual address of the handler.
+      ipoff: Context offset of the interpreter's IP field.
+      codeoff: Context offset of the code-base pointer.
+      table: Dispatch table address(es) of the runtime.
+      inline_depth: How many levels of called helpers to inline.
+      entry_ctx: Register holding the VM context on entry.
+
+    Returns:
+      One list of event strings (ADV, RD, SUB, CALL, ...) per explored path.
+    """
     key = (id(img), va, ipoff, depth_key := inline_depth)
     if key in _RUN_CACHE:
         return _RUN_CACHE[key]
@@ -113,7 +204,17 @@ def run(img, va, ipoff, codeoff, table, inline_depth=1, entry_ctx="ecx"):
     results = []
     _RUN_CACHE[key] = results
 
-    def mem_parts(i, op):
+    def mem_parts(i: Any, op: Any) -> tuple[list[tuple[Any, ...]], int]:
+        """Splits a memory operand into its components.
+
+        Args:
+          i: The capstone instruction owning the operand.
+          op: A memory operand of i.
+
+        Returns:
+          A list of ("b", base) / ("i", index, scale) parts and the
+          displacement.
+        """
         m = op.mem
         parts = []
         if m.base:
@@ -122,7 +223,24 @@ def run(img, va, ipoff, codeoff, table, inline_depth=1, entry_ctx="ecx"):
             parts.append(("i", i.reg_name(m.index), m.scale))
         return parts, m.disp
 
-    def explore(addr, st, ev, seen, depth):
+    def explore(
+        addr: int,
+        st: dict[str, Any],
+        ev: list[str],
+        seen: frozenset[int],
+        depth: int,
+    ) -> None:
+        """Explores the handler paths from addr.
+
+        Appends each finished path's event list to the enclosing results.
+
+        Args:
+          addr: Address of the next instruction to interpret.
+          st: Abstract state with keys regs, ctx and ip.
+          ev: Events recorded so far on this path.
+          seen: Addresses already visited on this path.
+          depth: Current inlining depth.
+        """
         regs, ctxregs, ipd = st["regs"], st["ctx"], st["ip"]
         steps = 0
         while True:
@@ -142,32 +260,46 @@ def run(img, va, ipoff, codeoff, table, inline_depth=1, entry_ctx="ecx"):
             m, ops = i.mnemonic, i.operands
             nxt = addr + i.size
 
-            def val(op):
+            def val(op: Any) -> tuple[Any, ...]:
+                """Returns the abstract value of operand op."""
                 if op.type == X86_OP_REG:
                     return regs.get(i.reg_name(op.reg), ("u",))
                 if op.type == X86_OP_IMM:
                     return ("c", op.imm)
                 return ("u",)
 
-            def setreg(op, v):
+            def setreg(op: Any, v: tuple[Any, ...]) -> None:
+                """Assigns abstract value v to register operand op."""
                 if op.type == X86_OP_REG:
                     regs[i.reg_name(op.reg)] = v
 
-            def is_ipmem(op):
-                return (op.type == X86_OP_MEM and op.mem.disp == ipoff and
-                        op.mem.base and i.reg_name(op.mem.base) in ctxregs and
-                        not op.mem.index)
+            def is_ipmem(op: Any) -> bool:
+                """Tells whether op addresses the IP field."""
+                return (
+                    op.type == X86_OP_MEM
+                    and op.mem.disp == ipoff
+                    and op.mem.base
+                    and i.reg_name(op.mem.base) in ctxregs
+                    and not op.mem.index
+                )
 
-            def is_codeoff(op):
-                return (op.type == X86_OP_MEM and op.mem.disp == codeoff and
-                        op.mem.base and i.reg_name(op.mem.base) in ctxregs and
-                        not op.mem.index)
+            def is_codeoff(op: Any) -> bool:
+                """Tells whether op is an IP-relative code offset."""
+                return (
+                    op.type == X86_OP_MEM
+                    and op.mem.disp == codeoff
+                    and op.mem.base
+                    and i.reg_name(op.mem.base) in ctxregs
+                    and not op.mem.index
+                )
 
             # ---- IP updates ----
             if m == "inc" and is_ipmem(ops[0]):
-                ipd = (ipd[0] + 1, ipd[1]); ev.append("ADV1")
+                ipd = (ipd[0] + 1, ipd[1])
+                ev.append("ADV1")
             elif m == "add" and is_ipmem(ops[0]) and ops[1].type == X86_OP_IMM:
-                ipd = (ipd[0] + ops[1].imm, ipd[1]); ev.append(f"ADV{ops[1].imm}")
+                ipd = (ipd[0] + ops[1].imm, ipd[1])
+                ev.append(f"ADV{ops[1].imm}")
             elif m == "mov" and is_ipmem(ops[0]):
                 v = val(ops[1])
                 if v[0] == "ip":
@@ -179,10 +311,16 @@ def run(img, va, ipoff, codeoff, table, inline_depth=1, entry_ctx="ecx"):
                     ev.append("IPSET?")
             elif m == "mov" and ops[0].type == X86_OP_REG and is_ipmem(ops[1]):
                 regs[i.reg_name(ops[0].reg)] = ("ip", ipd)
-            elif m == "mov" and ops[0].type == X86_OP_REG and is_codeoff(ops[1]):
+            elif (
+                m == "mov" and ops[0].type == X86_OP_REG and is_codeoff(ops[1])
+            ):
                 regs[i.reg_name(ops[0].reg)] = ("cb",)
-            elif m == "mov" and len(ops) == 2 and ops[0].type == X86_OP_REG and \
-                    ops[1].type == X86_OP_REG:
+            elif (
+                m == "mov"
+                and len(ops) == 2
+                and ops[0].type == X86_OP_REG
+                and ops[1].type == X86_OP_REG
+            ):
                 src = i.reg_name(ops[1].reg)
                 regs[i.reg_name(ops[0].reg)] = regs.get(src, ("u",))
                 if src in ctxregs:
@@ -191,11 +329,16 @@ def run(img, va, ipoff, codeoff, table, inline_depth=1, entry_ctx="ecx"):
                 parts, disp = mem_parts(i, ops[1])
                 base = [regs.get(p[1], ("u",)) for p in parts if p[0] == "b"]
                 if len(parts) == 1 and base and base[0][0] == "ip":
-                    setreg(ops[0], ("ip", (base[0][1][0] + disp, base[0][1][1])))
+                    setreg(
+                        ops[0], ("ip", (base[0][1][0] + disp, base[0][1][1]))
+                    )
                 else:
                     setreg(ops[0], ("u",))
-            elif m in ("add", "sub") and ops[0].type == X86_OP_REG and \
-                    ops[1].type == X86_OP_IMM:
+            elif (
+                m in ("add", "sub")
+                and ops[0].type == X86_OP_REG
+                and ops[1].type == X86_OP_IMM
+            ):
                 v = val(ops[0])
                 k = ops[1].imm if m == "add" else -ops[1].imm
                 if v[0] == "ip":
@@ -204,16 +347,27 @@ def run(img, va, ipoff, codeoff, table, inline_depth=1, entry_ctx="ecx"):
                     setreg(ops[0], ("u",))
             elif m == "inc" and ops[0].type == X86_OP_REG:
                 v = val(ops[0])
-                setreg(ops[0], ("ip", (v[1][0] + 1, v[1][1])) if v[0] == "ip" else ("u",))
-            elif m == "add" and ops[0].type == X86_OP_REG and ops[1].type == X86_OP_REG:
+                setreg(
+                    ops[0],
+                    ("ip", (v[1][0] + 1, v[1][1])) if v[0] == "ip" else ("u",),
+                )
+            elif (
+                m == "add"
+                and ops[0].type == X86_OP_REG
+                and ops[1].type == X86_OP_REG
+            ):
                 a, b = val(ops[0]), val(ops[1])
                 if (a[0], b[0]) in (("ip", "cb"), ("cb", "ip")):
                     ipv = a if a[0] == "ip" else b
                     setreg(ops[0], ("ipabs", ipv[1]))
                 else:
                     setreg(ops[0], ("u",))
-            elif m in ("movzx", "mov", "movsx") and len(ops) == 2 and \
-                    ops[0].type == X86_OP_REG and ops[1].type == X86_OP_MEM:
+            elif (
+                m in ("movzx", "mov", "movsx")
+                and len(ops) == 2
+                and ops[0].type == X86_OP_REG
+                and ops[1].type == X86_OP_MEM
+            ):
                 parts, disp = mem_parts(i, ops[1])
                 kinds = [regs.get(p[1], ("u",)) for p in parts if p[0] == "b"]
                 idx = [regs.get(p[1], ("u",)) for p in parts if p[0] == "i"]
@@ -223,32 +377,54 @@ def run(img, va, ipoff, codeoff, table, inline_depth=1, entry_ctx="ecx"):
                 w = ops[1].size
                 if ipv and (hascb or ipv[0][0] == "ipabs"):
                     off = ipv[0][1][0] + disp
-                    ev.append(f"RD{w}@{off}" if not ipv[0][1][1] else f"RD{w}@sub+{off}")
+                    ev.append(
+                        f"RD{w}@{off}"
+                        if not ipv[0][1][1]
+                        else f"RD{w}@sub+{off}"
+                    )
                     setreg(ops[0], ("code", w, off, len(ev) - 1))
-                elif ops[1].mem.base and i.reg_name(ops[1].mem.base) in ctxregs \
-                        and ops[1].mem.index == 0 and ops[1].mem.disp == ipoff:
+                elif (
+                    ops[1].mem.base
+                    and i.reg_name(ops[1].mem.base) in ctxregs
+                    and ops[1].mem.index == 0
+                    and ops[1].mem.disp == ipoff
+                ):
                     regs[i.reg_name(ops[0].reg)] = ("ip", ipd)
                 else:
                     # table load: mov eax,[reg*4+TABLE]
                     if idx and ops[1].mem.disp == table[0]:
                         ci = regs.get(i.reg_name(ops[1].mem.index), ("u",))
-                        setreg(ops[0], ("fn", ci[3] if ci[0] == "code" else None))
+                        setreg(
+                            ops[0], ("fn", ci[3] if ci[0] == "code" else None)
+                        )
                     else:
                         setreg(ops[0], ("u",))
             elif m == "call":
                 tgt = ops[0]
                 if tgt.type == X86_OP_MEM and tgt.mem.disp in table:
-                    ci = regs.get(i.reg_name(tgt.mem.index), ("u",)) if tgt.mem.index else ("u",)
+                    ci = (
+                        regs.get(i.reg_name(tgt.mem.index), ("u",))
+                        if tgt.mem.index
+                        else ("u",)
+                    )
                     if ci[0] == "code" and ci[3] < len(ev):
                         ev[ci[3]] = ""
-                    ipd = (ipd[0], ipd[1] + 1); ev.append("SUB")
-                elif tgt.type == X86_OP_REG and regs.get(i.reg_name(tgt.reg), ("u",))[0] == "fn":
+                    ipd = (ipd[0], ipd[1] + 1)
+                    ev.append("SUB")
+                elif (
+                    tgt.type == X86_OP_REG
+                    and regs.get(i.reg_name(tgt.reg), ("u",))[0] == "fn"
+                ):
                     fi = regs[i.reg_name(tgt.reg)][1]
                     if fi is not None and fi < len(ev):
                         ev[fi] = ""
-                    ipd = (ipd[0], ipd[1] + 1); ev.append("SUB")
-                elif tgt.type == X86_OP_IMM and "ecx" in ctxregs or (
-                        tgt.type == X86_OP_IMM and depth < inline_depth):
+                    ipd = (ipd[0], ipd[1] + 1)
+                    ev.append("SUB")
+                elif (
+                    tgt.type == X86_OP_IMM
+                    and "ecx" in ctxregs
+                    or (tgt.type == X86_OP_IMM and depth < inline_depth)
+                ):
                     # helper taking ctx in ECX (or pushed): inline when possible
                     sub = inline(tgt.imm, ctxregs, ipd, depth)
                     if sub is None:
@@ -262,7 +438,11 @@ def run(img, va, ipoff, codeoff, table, inline_depth=1, entry_ctx="ecx"):
                 for r in ("eax", "ecx", "edx"):
                     regs[r] = ("u",)
                 # ctx pointer survives in esi/ebx/edi by convention
-                ctxregs = ctxregs - {"ecx", "eax", "edx"} if ctxregs - {"ecx"} else ctxregs
+                ctxregs = (
+                    ctxregs - {"ecx", "eax", "edx"}
+                    if ctxregs - {"ecx"}
+                    else ctxregs
+                )
             elif m == "ret":
                 ev.append(f"END[ip+{ipd[0]}{'+sub'*ipd[1] if ipd[1] else ''}]")
                 results.append(ev)
@@ -279,18 +459,41 @@ def run(img, va, ipoff, codeoff, table, inline_depth=1, entry_ctx="ecx"):
                 st2 = {"regs": dict(regs), "ctx": set(ctxregs), "ip": ipd}
                 explore(ops[0].imm, st2, list(ev) + [f"<{m}>"], seen, depth)
                 ev.append(f"<!{m}>")
-            elif ops and ops[0].type == X86_OP_REG and m not in ("cmp", "test", "push", "pop"):
+            elif (
+                ops
+                and ops[0].type == X86_OP_REG
+                and m not in ("cmp", "test", "push", "pop")
+            ):
                 setreg(ops[0], ("u",))
             addr = nxt
 
-    def inline(target, ctxregs, ipd, depth):
+    def inline(
+        target: int, ctxregs: set[str], ipd: tuple[int, int], depth: int
+    ) -> tuple[list[str], tuple[int, int]] | None:
         # analyse helper: assume ctx in ECX
-        sub_results = run(img, target, ipoff, codeoff, table, inline_depth, "ecx") \
-            if depth < inline_depth else None
+        """Explores an inlined call target.
+
+        Args:
+          target: Address of the called helper.
+          ctxregs: Registers currently holding the VM context.
+          ipd: Current abstract IP delta.
+          depth: Current inlining depth.
+
+        Returns:
+          The helper's events and an (advance, sub-instruction count) pair,
+          or None when it cannot be inlined or its paths disagree.
+        """
+        sub_results = (
+            run(img, target, ipoff, codeoff, table, inline_depth, "ecx")
+            if depth < inline_depth
+            else None
+        )
         if not sub_results:
             return None
         # use the first complete path; fall back if it disagrees
-        sigs = {tuple(e for e in p if not e.startswith("END")) for p in sub_results}
+        sigs = {
+            tuple(e for e in p if not e.startswith("END")) for p in sub_results
+        }
         if len(sigs) != 1:
             return None
         p = sub_results[0]
@@ -306,11 +509,25 @@ def run(img, va, ipoff, codeoff, table, inline_depth=1, entry_ctx="ecx"):
                 evs.append(e)
         return evs, (adv, subs)
 
-    explore(va, {"regs": {}, "ctx": {entry_ctx, "ecx"}, "ip": (0, 0)}, [], frozenset(), 0)
+    explore(
+        va,
+        {"regs": {}, "ctx": {entry_ctx, "ecx"}, "ip": (0, 0)},
+        [],
+        frozenset(),
+        0,
+    )
     return results
 
 
-def summarize(paths):
+def summarize(paths: list[list[str]]) -> list[str]:
+    """Summarizes control-flow paths into layout strings.
+
+    Args:
+      paths: Event lists as returned by run().
+
+    Returns:
+      The distinct space-joined path signatures, in first-seen order.
+    """
     sigs = []
     for p in paths:
         s = " ".join(e for e in p if e and not e.startswith("<"))
@@ -319,16 +536,27 @@ def summarize(paths):
     return sigs
 
 
-def main():
+def main() -> None:
+    """Runs the command line tool.
+
+    Prints each opcode's handler layout signatures and optionally writes them
+    as JSON.
+    """
     ap = argparse.ArgumentParser()
     ap.add_argument("exe")
     ap.add_argument("table", type=lambda x: int(x, 0))
     ap.add_argument("--count", type=int, default=86)
     ap.add_argument("--json")
-    ap.add_argument("--table-json", help="runtime_tables.py output: use the post-init table")
+    ap.add_argument(
+        "--table-json", help="runtime_tables.py output: use the post-init table"
+    )
     ap.add_argument("--only", help="comma list of hex opcodes")
-    ap.add_argument("--codeoff", type=lambda x: int(x, 0), default=0x10,
-                    help="ctx offset of the code-base pointer (2.4.2: 0x10, 2.4.12: 0x3c)")
+    ap.add_argument(
+        "--codeoff",
+        type=lambda x: int(x, 0),
+        default=0x10,
+        help="ctx offset of the code-base pointer (2.4.2: 0x10, 2.4.12: 0x3c)",
+    )
     a = ap.parse_args()
     img = Image(a.exe)
     if a.table_json:
